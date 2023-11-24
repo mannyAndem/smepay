@@ -4,9 +4,6 @@ const bodyparser = require('body-parser')
 const passport = require('passport')
 const ckSession = require('cookie-session')
 
-
-require('./config/google_auth')
-
 const userRoute = require('./routes/user')
 const clientRoute = require('./routes/client')
 
@@ -16,6 +13,8 @@ const { connectDB } = require('./config/db')
 const { logger } = require('./config/logger')
 
 const app = express()
+
+require('./config/google_auth')
 
 app.use(ckSession({
     name: 'google-auth-session',

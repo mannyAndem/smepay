@@ -110,7 +110,7 @@ exports.gglConsentScreen = passport.authenticate(
     'google', { scope: ['email', 'profile'] }
 );
 
-// setting up display for callback when a user clicks link sent to his/her mail
+// setting up display for callback when a user clicks link sent
 exports.gglCallback = passport.authenticate(
     'google', { 
         session: false, 
@@ -120,15 +120,13 @@ exports.gglCallback = passport.authenticate(
 );
 
 
-// signing user login via google to use token for verification    
+// signing user login via google to use token for verification
 exports.jsnWebToken = (req, res) => {
     console.log('here')
     jwt.sign(
         {user: req.user}, json_secret, {expiresIn: '.25'},
         (err, token) => {
-            if(err){
-                return res.status(500).json({token: null})
-            }
+            if(err){ return res.status(500).json({token: null}) }
             res.status(200).json({token, userId: req.user})
         })
         console.log('oops')

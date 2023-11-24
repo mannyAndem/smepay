@@ -3,34 +3,40 @@ const Schema = mongoose.Schema
 
 const invoiceSchema = new Schema(
     {
-        number: {
+        recipientEmail: {
             type: String,
             required: true
         },
-        clientname: {
+        description: {
             type: String,
             required: true
         },
-        amount: {
-            type: Number,
-            required: true
-        },
-        duedate: {
+        issuedDate: {
             type: Date,
+            required: true
+        },
+        dueDate: {
+            type: Date,
+            required: true
+        },
+        billFrom: {
+            type: String,
+            required: true
+        },
+        billTo: {
+            type: String,
             required: true
         },
         status: {
             type: String, 
-            required: true
+            default: 'pending'
         },
-        amount: {
-            type: Number,
-            required: true
-        },
-        method: {
-            type: Number,
-            required: true
-        },
+        items: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Item'
+            }
+        ]
     },
     { 
         timestamps: true 
