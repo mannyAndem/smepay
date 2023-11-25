@@ -1,5 +1,9 @@
 import InvoiceStatsCard from "../../../features/invoices/InvoiceStatsCard";
 import StatisticCard from "./StatisticCard";
+import projectsIcon from "../../../assets/eos-icons_project-outlined.png";
+import paidIcon from "../../../assets/icon-paid.png";
+import clientsIcon from "../../../assets/clients-icon.png";
+import invoiceIcon from "../../../assets/invoice-icon.png";
 
 const Statistics = () => {
   /**
@@ -12,21 +16,25 @@ const Statistics = () => {
       name: "Projects",
       amount: 50,
       isCurrency: false,
+      icon: projectsIcon,
     },
     {
       name: "Paid",
       amount: 200000,
       isCurrency: true,
+      icon: paidIcon,
     },
     {
       name: "Clients",
       amount: 30,
       isCurrency: false,
+      icon: clientsIcon,
     },
     {
       name: "Invoices sent",
       amount: 50,
       isCurrency: false,
+      icon: invoiceIcon,
     },
   ];
 
@@ -37,7 +45,7 @@ const Statistics = () => {
     overdue: 15,
   };
   return (
-    <div className="grid grid-cols-3 grid-rows-2 gap-6">
+    <div className="grid grid-cols-3 grid-rows-2 gap-10">
       {statistics.map((statistic) => (
         <div className="col-span-1 row-span-1 h-full">
           <StatisticCard statistic={statistic} />

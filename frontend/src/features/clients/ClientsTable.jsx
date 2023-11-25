@@ -9,9 +9,13 @@ const ClientsTable = () => {
     <div className=" my-16  bg-white rounded-md shadow-md ">
       <div className="flex items-center justify-between  p-6">
         <div className="flex">
-          <span className="p-2 border-r text-sm">All</span>
-          <span className="p-2 border-r text-sm">Active</span>
-          <span className="p-2 text-sm">Inactive</span>
+          <span className="px-2 py-1 border-r text-sm font-semibold text-green">
+            All
+          </span>
+          <span className="px-2 py-1 border-r text-sm font-semibold">
+            Active
+          </span>
+          <span className="px-2 py-1 text-sm font-semibold">Inactive</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm">Sort by:</span>
@@ -21,29 +25,47 @@ const ClientsTable = () => {
         </div>
       </div>
       <table className="w-full text-center">
-        <thead className="bg-gray-200">
+        <thead className="bg-veryDarkBlue text-gray font-semibold">
           <tr>
-            <th className="p-2 border-r border-black">Name</th>
-            <th className="p-2 border-x border-black">Email Address</th>
-            <th className="p-2 border-x border-black">Total Outstanding</th>
-            <th className="p-2 border-l border-black">Details</th>
+            <th className="p-2 border-r border-gray">Name</th>
+            <th className="p-2 border-x border-gray">Email Address</th>
+            <th className="p-2 border-x border-gray">Total Outstanding</th>
+            <th className="p-2 border-l border-gray">Details</th>
           </tr>
         </thead>
         <tbody>
           {clients.map((client) => {
             return (
               <tr key={client.id}>
-                <td className="p-2 border-r border-black">{client.name}</td>
-                <td className="p-2 border-x border-black">{client.email}</td>
-                <td className="p-2 border-x border-black">
+                <td className="p-2">{client.name}</td>
+                <td className="p-2">{client.email}</td>
+                <td className="p-2">
                   {client.totalOutstanding.toLocaleString()}
                 </td>
-                <td className="p-2 border-l border-black">
+                <td className="p-2">
                   <div className="flex items-center gap-4 justify-center">
-                    <div className="p-2 w-1/2 bg-black rounded-2xl text-white text-sm">
+                    <button className="p-2 w-1/2 bg-blue rounded-2xl text-gray font-semibold text-sm">
                       View
+                    </button>
+                    <div className="group relative">
+                      <button>
+                        <FaEllipsis size={20} />
+                      </button>
+                      <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
+                        <button className="p-2 flex justify-start items-center">
+                          Edit
+                        </button>
+                        <button className="p-2 whitespace-nowrap flex justify-start items-center">
+                          Recent Payment
+                        </button>
+                        <button className="p-2 flex justify-start items-center">
+                          Print
+                        </button>
+                        <button className="p-2 flex justify-start items-center">
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                    <FaEllipsis size={24} />
                   </div>
                 </td>
               </tr>

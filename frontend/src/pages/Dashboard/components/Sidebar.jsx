@@ -1,6 +1,6 @@
 import SidebarIcon from "./SidebarIcon";
 import { FaClipboardUser } from "react-icons/fa6";
-import { MdOutlineDashboard } from "react-icons/md";
+import { MdGroup, MdOutlineDashboard } from "react-icons/md";
 import { CiBank } from "react-icons/ci";
 import { CiLogout } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -16,34 +16,34 @@ const Sidebar = () => {
     {
       name: "dashboard",
       to: "/",
-      icon: <MdOutlineDashboard size={28} />,
+      icon: <MdOutlineDashboard size={24} color="#001F3F" />,
     },
     {
       name: "clients",
       to: "/clients",
-      icon: <FaClipboardUser size={28} />,
+      icon: <MdGroup size={24} color="#001F3F" />,
     },
     {
       name: "transactions",
       to: "/transactions",
-      icon: <CiBank size={28} />,
+      icon: <CiBank size={24} color="#001F3F" />,
     },
     {
       name: "settings",
       to: "/settings",
-      icon: <IoSettingsOutline size={28} />,
+      icon: <IoSettingsOutline size={24} color="#001F3F" />,
     },
   ];
   return (
-    <div className="py-4 border-r-2 ">
-      <span className="font-semibold text-xl m-4">SMEPAY</span>
+    <div className="py-5">
+      <span className="font-semibold text-3xl m-5">SMEPAY</span>
       <div className="mt-12 flex flex-col gap-4">
         {LINKS.map((link) => (
           <SidebarIcon link={link} />
         ))}
-        <div className="w-full flex items-center gap-4 py-6 px-4 cursor-pointer">
-          <div className="p-2 bg-gray-400 rounded-sm shadow-sm">
-            <CiLogout size={28} />
+        <div className="w-full flex items-center gap-4 py-6 px-6 cursor-pointer">
+          <div className="p-1 bg-darkGray rounded-sm shadow-sm">
+            <CiLogout size={24} color="#001F3F" />
           </div>
           <span className="capitalize text-lg">Logout</span>
         </div>

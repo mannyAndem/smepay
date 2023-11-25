@@ -11,7 +11,7 @@ const InvoicesTable = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className=" my-16  bg-white rounded-md shadow-md ">
+    <div className="bg-white rounded-md shadow-md pb-4">
       <div className="flex items-center justify-between  p-6">
         <span className="text-sm font-semibold">Open Invoices</span>
         <div className="flex items-center gap-2">
@@ -22,33 +22,55 @@ const InvoicesTable = () => {
         </div>
       </div>
       <table className="w-full text-center">
-        <thead className="bg-gray-200">
+        <thead className="bg-veryDarkBlue text-gray font-semibold">
           <tr>
-            <th className="p-2 border-r border-black">Name</th>
-            <th className="p-2 border-x border-black">Amount</th>
-            <th className="p-2 border-x border-black">Dates</th>
-            <th className="p-2 border-x border-black">Invoice Number</th>
-            <th className="p-2 border-l border-black">Status</th>
+            <th className="p-2 border-r border-gray">Name</th>
+            <th className="p-2 border-x border-gray">Amount</th>
+            <th className="p-2 border-x border-gray">Dates</th>
+            <th className="p-2 border-x border-gray">Invoice Number</th>
+            <th className="p-2 border-l border-gray">Status</th>
           </tr>
         </thead>
         <tbody>
           {invoices.map((invoice) => {
             return (
               <tr key={invoice.id}>
-                <td className="p-2 border-r border-black">{invoice.name}</td>
-                <td className="p-2 border-x border-black">
-                  {invoice.amount.toLocaleString()}
-                </td>
-                <td className="p-2 border-x border-black">{invoice.dates}</td>
-                <td className="p-2 border-x border-black">
-                  {invoice.invoiceNumber}
-                </td>
-                <td className="p-2 border-l border-black">
+                <td className="p-2">{invoice.name}</td>
+                <td className="p-2">{invoice.amount.toLocaleString()}</td>
+                <td className="p-2">{invoice.dates}</td>
+                <td className="p-2">{invoice.invoiceNumber}</td>
+                <td className="p-2">
                   <div className="flex items-center gap-4 justify-center">
-                    <div className="p-2 w-1/2 bg-black rounded-2xl text-white text-sm">
+                    <div
+                      className={`${
+                        invoice.status === "paid"
+                          ? "bg-green"
+                          : invoice.status === "pending"
+                          ? "bg-orange"
+                          : "bg-red"
+                      } py-2 px-4 rounded-2xl text-white text-sm`}
+                    >
                       {invoice.status.toUpperCase()}
                     </div>
-                    <FaEllipsis size={24} />
+                    <div className="group relative">
+                      <button>
+                        <FaEllipsis size={20} />
+                      </button>
+                      <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
+                        <button className="p-2 flex justify-start items-center">
+                          Edit
+                        </button>
+                        <button className="p-2 whitespace-nowrap flex justify-start items-center">
+                          Recent Payment
+                        </button>
+                        <button className="p-2 flex justify-start items-center">
+                          Print
+                        </button>
+                        <button className="p-2 flex justify-start items-center">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </td>
               </tr>

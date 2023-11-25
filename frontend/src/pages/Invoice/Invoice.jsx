@@ -1,4 +1,4 @@
-import InvoiceDetails from "../../../features/invoices/InvoiceDetails";
+import InvoiceDetails from "../../features/invoices/InvoiceDetails";
 
 /**
  * This component is responsibe for rendering out an invoice card. It takes the id specified in the URL and renders same

@@ -19,14 +19,14 @@ const Overview = () => {
         <div className="flex justify-between items-center my-6">
           <h1 className="font-semibold text-2xl">Overview</h1>
           <button
-            className="bg-black text-white text-sm px-6 py-4 rounded-md"
+            className="bg-blue text-white text-sm px-10 font-bold py-4 rounded-md"
             onClick={() => setInvoiceModalVisibilty(true)}
           >
             New Invoice
           </button>
         </div>
         <Statistics />
-        <div>
+        <div className="my-12">
           <InvoicesTable />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import Invoice from "./pages/Dashboard/Invoice/Invoice";
+import Invoice from "./pages/Invoice/Invoice";
 
 function App() {
   // const count = useSelector((state) => state.counter.value);

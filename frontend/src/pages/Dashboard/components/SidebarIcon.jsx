@@ -9,13 +9,15 @@ const SidebarIcon = ({ link }) => {
     <NavLink
       className={({ isActive }) =>
         `${
-          isActive ? "bg-gray-700 text-white" : "bg-transparent"
-        } w-full flex items-center gap-4 py-4 px-4`
+          isActive
+            ? "bg-blue text-white [&>div]:bg-white"
+            : "[&>div]:bg-darkGray bg-transparent"
+        } w-full flex items-center gap-4 py-4 px-6`
       }
       to={link.to}
       end
     >
-      <div className="p-2 bg-gray-400 rounded-sm shadow-sm">{link.icon}</div>
+      <div className="p-1 rounded-sm shadow-sm">{link.icon}</div>
       <span className="capitalize text-lg">
         {link.name.charAt(0).toUpperCase() + link.name.substring(1)}
       </span>

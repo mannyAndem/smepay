@@ -12,7 +12,11 @@ const StatisticCard = ({ statistic }) => {
         </span>
         <span>{statistic.name}</span>
       </div>
-      <div className="self-start w-16 h-16 bg-gray-100 rounded-sm shadow-sm"></div>
+      {statistic.icon && (
+        <div className="self-start p-2 bg-paleBlue rounded-sm shadow-sm">
+          <img src={statistic.icon} alt={statistic.name} />
+        </div>
+      )}
     </div>
   );
 };

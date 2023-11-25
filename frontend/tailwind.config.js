@@ -7,7 +7,20 @@ export default {
     "./src/*.{jsx, js}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        gray: "#f5f5f5",
+        darkGray: "#f2f2f2",
+        lightGray: "#D9D9D9",
+        blue: "#3498DB",
+        paleBlue: "#82CBFC",
+        veryDarkBlue: "#001F3F",
+        green: "#2ECC71",
+        orange: "#FF9800",
+        red: "#E74C3C",
+        dark: "#1e1e1e",
+      },
+    },
   },
   plugins: [],
 };

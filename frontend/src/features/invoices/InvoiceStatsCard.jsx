@@ -10,8 +10,8 @@ const InvoiceStatsCard = ({ statistic }) => {
     labels: ["Paid", "Pending", "Overdue"],
     datasets: [
       {
-        label: "Stuff I do",
-        backgroundColor: ["#6b7280", "black", "#94a3b8"],
+        label: "Invoices",
+        backgroundColor: ["#2ECC71", "#FF9800", "#E74C3C"],
 
         data: [statistic.paid, statistic.pending, statistic.overdue],
       },
@@ -31,19 +31,19 @@ const InvoiceStatsCard = ({ statistic }) => {
       </div>
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div className="flex items-center gap-1">
-          <div className="w-4 h-4 bg-gray-500 rounded-full"></div>
+          <div className="w-4 h-4 bg-green rounded-full"></div>
           <span className="text-sm">
             Paid - {(statistic.paid / statistic.total) * 100}%
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-black rounded-full"></div>
+          <div className="w-4 h-4 bg-orange rounded-full"></div>
           <span className="text-sm">
             Pending - {(statistic.pending / statistic.total) * 100}%
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-slate-400 rounded-full"></div>
+          <div className="w-4 h-4 bg-red rounded-full"></div>
           <span className="text-sm">
             Overdue - {(statistic.overdue / statistic.total) * 100}%
           </span>

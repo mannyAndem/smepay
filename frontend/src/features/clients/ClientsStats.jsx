@@ -1,5 +1,9 @@
 import { useSelector } from "react-redux";
 import { selectClients } from "./clientSlice";
+import projectsIcon from "../../assets/eos-icons_project-outlined.png";
+import paidIcon from "../../assets/icon-paid.png";
+import clientsIcon from "../../assets/clients-icon.png";
+import invoiceIcon from "../../assets/invoice-icon.png";
 import StatisticCard from "../../pages/Dashboard/components/StatisticCard";
 
 const ClientStats = () => {
@@ -16,6 +20,7 @@ const ClientStats = () => {
           name: "Total Clients",
           amount: clients.length,
           isCurrency: false,
+          icon: clientsIcon,
         }}
       />
       <StatisticCard
@@ -23,6 +28,7 @@ const ClientStats = () => {
           name: "Active Clients",
           amount: clients.length,
           isCurrency: false,
+          icon: clientsIcon,
         }}
       />
       <StatisticCard
@@ -30,6 +36,7 @@ const ClientStats = () => {
           name: "Total Outstanding Payments",
           amount: clients.reduce((acc, curr) => curr.totalOutstanding + acc, 0),
           isCurrency: false,
+          icon: invoiceIcon,
         }}
       />
     </div>
