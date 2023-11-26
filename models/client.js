@@ -30,8 +30,13 @@ const clientSchema = new Schema(
             // active or inactive
         },
         note: String,
-        profile: {
+        image: {
             type: String,
+            required: true
+        },
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
             required: true
         }
     },

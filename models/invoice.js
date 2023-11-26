@@ -36,7 +36,12 @@ const invoiceSchema = new Schema(
                 type: Schema.Types.ObjectId,
                 ref: 'Item'
             }
-        ]
+        ],
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        }
     },
     { 
         timestamps: true 

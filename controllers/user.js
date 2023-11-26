@@ -36,7 +36,6 @@ exports.getUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.userId)
-        // const user = await User.findById("64c22a054fd269c27a6ef043")
 
         userDetailsFunc(user, "User Not Found")
         res.status(200).json({message: "Successfully Fetched User", data: user})

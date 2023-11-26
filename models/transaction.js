@@ -15,6 +15,11 @@ const transcationSchema = new Schema(
             type: Number,
             required: true
         },
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
         details: [
             {   
                 type: Schema.Types.ObjectId,

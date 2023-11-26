@@ -3,6 +3,7 @@ const bodyparser = require('body-parser')
 // const path = require('path')
 const passport = require('passport')
 const ckSession = require('cookie-session')
+const multer = require('multer')
 
 const userRoute = require('./routes/user')
 const clientRoute = require('./routes/client')
@@ -29,6 +30,10 @@ app.use(passport.session())
 app.use(bodyparser.json())
 // helps server understand all client json data
 
+// to allow for uploading of images 
+// into a folder accessible locally
+app.use(multer({dest: 'images/'}).single('image'))
+
 // // ensure images are allowed and easily accessible
 // app.use('/images', express.static(path.join(__dirname, 'images')))
 
@@ -49,7 +54,7 @@ app.get('/', (req, res) => {
 // calling the new routes for accessibility by users
 app.use(userRoute)
 
-app.use('/smepay/api', clientRoute)
+app.use('/smepay', clientRoute)
 
 // errors from the above middlewares (see all catch in controllers) 
 // are sent to the middleware below (error middleware)
