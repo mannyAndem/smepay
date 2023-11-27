@@ -8,7 +8,7 @@ const StatisticCard = ({ statistic }) => {
       <div className="p-2 flex flex-col gap-8">
         <span className="text-3xl">
           {statistic.isCurrency && "#"}
-          {statistic.amount.toLocaleString()}
+          {statistic.amount}
         </span>
         <span>{statistic.name}</span>
       </div>

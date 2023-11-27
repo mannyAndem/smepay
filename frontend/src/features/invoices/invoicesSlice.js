@@ -13,67 +13,18 @@ export const createInvoice = createAsyncThunk(
       "/item/add/:invoiceId",
       JSON.stringify(items)
     );
-    return response.data;
+    return invoiceResponse.data;
   }
 );
 
 export const fetchInvoices = createAsyncThunk("invoices/fetch", async () => {
-  const response = await axios.get("/invoices");
-  return response.data;
+  const response = await axios.get("/invoice");
+  console.log(response.data);
+  return response.data.data;
 });
 
 const initialState = {
-  data: [
-    {
-      name: "ABC Corp",
-      amount: 2000,
-      dates: "20th November, 2023",
-      invoiceNumber: "INV-20231120-001",
-      status: "pending",
-    },
-    {
-      name: "ABC Corp",
-      amount: 2000,
-      dates: "20th November, 2023",
-      invoiceNumber: "INV-20231120-001",
-      status: "pending",
-    },
-    {
-      name: "ABC Corp",
-      amount: 2000,
-      dates: "20th November, 2023",
-      invoiceNumber: "INV-20231120-001",
-      status: "pending",
-    },
-    {
-      name: "ABC Corp",
-      amount: 2000,
-      dates: "20th November, 2023",
-      invoiceNumber: "INV-20231120-001",
-      status: "pending",
-    },
-    {
-      name: "ABC Corp",
-      amount: 2000,
-      dates: "20th November, 2023",
-      invoiceNumber: "INV-20231120-001",
-      status: "pending",
-    },
-    {
-      name: "ABC Corp",
-      amount: 2000,
-      dates: "20th November, 2023",
-      invoiceNumber: "INV-20231120-001",
-      status: "pending",
-    },
-    {
-      name: "ABC Corp",
-      amount: 2000,
-      dates: "20th November, 2023",
-      invoiceNumber: "INV-20231120-001",
-      status: "pending",
-    },
-  ],
+  data: null,
   status: "idle",
   createInvoiceStatus: "idle",
   createInvoiceError: null,

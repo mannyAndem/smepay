@@ -2,9 +2,10 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "../../api/axios";
 
 export const addClient = createAsyncThunk("clients/addClient", async (data) => {
+  console.log(data);
   const response = axios.post(data);
-
-  return response;
+  console.log(response.data);
+  return response.data;
 });
 
 const initialState = {

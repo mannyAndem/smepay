@@ -134,7 +134,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
 
     dispatch(createInvoice(formData));
   };
-  console.log(formData);
+
   return (
     <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-16 py-2 z-50">
       <div className="bg-gray rounded-md shadow-md w-1/2 pb-4 overflow-y-auto">

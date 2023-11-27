@@ -94,7 +94,14 @@ const Signup = () => {
       return;
     }
 
-    dispatch(signup());
+    dispatch(
+      signup({
+        fullname: formData.firstName + " " + formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        confirmpass: formData.confirmPassword,
+      })
+    );
   };
 
   return (

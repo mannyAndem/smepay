@@ -6,7 +6,9 @@ import axios from "../../api/axios";
  */
 
 export const signup = createAsyncThunk("auth/signup", async (data) => {
+  console.log(data);
   const response = await axios.post("/signup", JSON.stringify(data));
+  console.log(response.data);
   return response.data;
 });
 
