@@ -15,22 +15,22 @@ const Sidebar = () => {
   const LINKS = [
     {
       name: "dashboard",
-      to: "/",
+      to: "/dashboard",
       icon: <MdOutlineDashboard size={24} color="#001F3F" />,
     },
     {
       name: "clients",
-      to: "/clients",
+      to: "/dashboard/clients",
       icon: <MdGroup size={24} color="#001F3F" />,
     },
     {
       name: "transactions",
-      to: "/transactions",
+      to: "/dashboard/transactions",
       icon: <CiBank size={24} color="#001F3F" />,
     },
     {
       name: "settings",
-      to: "/settings",
+      to: "/dashboard/settings",
       icon: <IoSettingsOutline size={24} color="#001F3F" />,
     },
   ];

@@ -1,4 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "../../api/axios";
+
+export const addClient = createAsyncThunk("clients/addClient", async (data) => {
+  const response = axios.post(data);
+
+  return response;
+});
 
 const initialState = {
   data: [
@@ -8,27 +15,28 @@ const initialState = {
       totalOutstanding: 2000,
     },
   ],
+  addClientStatus: "idle",
 };
 
 export const clientSlice = createSlice({
   name: "clients",
   initialState,
-  reducers: {
-    addClient: (state, action) => {
-      const newState = [...state, action.payload];
-      return newState;
-    },
-    removeClient: (state, action) => {
-      const newState = state.filter(
-        (client) => client.id !== action.payload.id
-      );
-      return newState;
-    },
+  reducers: {},
+
+  extraReducers(builder) {
+    builder.addCase(addClient.pending, (state) => {
+      state.addClientStatus = "pending";
+    });
+    builder.addCase(addClient.fulfilled, (state) => {
+      state.addClientStatus = "success";
+    });
+    builder.addCase(addClient.rejected, (state) => {
+      state.addClientStatus = "error";
+    });
   },
 });
 
 export default clientSlice.reducer;
 
-export const { addClient, removeClient } = clientSlice.actions;
-
+export const selectAddClientStatus = (state) => state.clients.addClientStatus;
 export const selectClients = (state) => state.clients.data;

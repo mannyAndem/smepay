@@ -5,8 +5,8 @@ import InvoiceDetails from "../../features/invoices/InvoiceDetails";
  */
 const Invoice = () => {
   return (
-    <div className="bg-gray-100 flex min-h-screen justify-center items-center">
-      <div className="bg-white w-1/2">
+    <div className="bg-lightGray flex min-h-screen justify-center items-center">
+      <div className="bg-gray w-1/2  rounded-md overflow-hidden shadow-md">
         <InvoiceDetails />
       </div>
     </div>

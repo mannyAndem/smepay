@@ -1,10 +1,14 @@
 import { CiBellOn } from "react-icons/ci";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../../features/authentication/authSlice";
 
 /**
  * The component is responsible for rendering out the dashboard header
  *
  */
 const Header = () => {
+  const currentUser = useSelector(selectCurrentUser);
+
   return (
     <header className="flex items-center justify-between p-4 bg-white rounded-md shadow-sm">
       <form className="w-1/2 flex items-center">

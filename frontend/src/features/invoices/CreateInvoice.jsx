@@ -1,24 +1,83 @@
 import { useState } from "react";
 import { FaPaperclip, FaPlus } from "react-icons/fa6";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createInvoice,
+  selectCreateInvoiceError,
+  selectCreateInvoiceStatus,
+} from "./invoicesSlice";
 
+/**
+ * Component is responsible for displaying the create invoice modal and submitting the form's dats to the backend
+ *
+ * It takes a setInvoiceModalVisibilty prop which is used to close the modal
+ */
 const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
-  /**
-   * Component is responsible for displaying the create invoice modal and submitting the form's dats to the backend
-   *
-   * It takes a setInvoiceModalVisibilty prop which is used to close the modal
-   */
+  const status = useSelector(selectCreateInvoiceStatus);
+  const error = useSelector(selectCreateInvoiceError);
+  const dispatch = useDispatch();
 
   // State to hold form data
   const [formData, setFormData] = useState({
-    email: "",
+    recipientEmail: "",
     description: "",
-    issuedOn: "",
-    dueOn: "",
+    issuedDate: "",
+    dueDate: "",
     billFrom: "",
     billTo: "",
     additionalNotes: "",
   });
+
+  // state to hold form errors
+  const [formErrors, setFormErrors] = useState({});
+
+  const validateForm = () => {
+    setFormErrors({});
+    let validateCounter = 0;
+
+    if (formData.recipientEmail.length === 0) {
+      setFormErrors((prev) => ({ ...prev, email: "Invalid email format" }));
+      validateCounter++;
+    }
+    if (formData.description.length === 0) {
+      setFormErrors((prev) => ({
+        ...prev,
+        description: "This field is required",
+      }));
+      validateCounter++;
+    }
+    if (formData.issuedDate.length === 0) {
+      setFormErrors((prev) => ({
+        ...prev,
+        issuedOn: "This field is required",
+      }));
+      validateCounter++;
+    }
+    if (formData.dueDate.length === 0) {
+      setFormErrors((prev) => ({ ...prev, dueOn: "This field is required" }));
+      validateCounter++;
+    }
+    if (formData.billFrom.length === 0) {
+      setFormErrors((prev) => ({
+        ...prev,
+        billFrom: "This field is required",
+      }));
+      validateCounter++;
+    }
+    if (formData.billTo.length === 0) {
+      setFormErrors((prev) => ({ ...prev, billTo: "This field is required" }));
+      validateCounter++;
+    }
+    if (!invoiceItems.some((item) => item.item.length > 0)) {
+      setFormErrors((prev) => ({
+        ...prev,
+        items: "Atleast one item is required",
+      }));
+    }
+
+    return validateCounter === 0;
+  };
 
   const handleFormInputChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -66,6 +125,15 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
     );
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    dispatch(createInvoice(formData));
+  };
   console.log(formData);
   return (
     <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-16 py-2 z-50">
@@ -86,19 +154,26 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
           </div>
           <button className="underline">COPY LINK</button>
         </div>
-        <form className="px-8 flex flex-col gap-4">
+        <form
+          className="px-8 flex flex-col gap-4"
+          onSubmit={(e) => handleSubmit(e)}
+        >
           <div className="flex flex-col gap-2">
             <label htmlFor="recipient-email">Recipient Email</label>
             <input
               type="text"
               id="recipient-email"
-              name="email"
+              name="recipientEmail"
               value={formData.email}
               onChange={(e) => handleFormInputChange(e)}
               autoComplete="off"
               className="border border-lightGray p-2 rounded-md bg-transparent"
-              required
             />
+            {formErrors?.email && (
+              <span className="text-red font-semibold text-sm">
+                {formErrors.email}
+              </span>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="description">Product Description</label>
@@ -110,8 +185,12 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               onChange={(e) => handleFormInputChange(e)}
               autoComplete="off"
               className="border border-lightGray p-2 rounded-md bg-transparent"
-              required
             />
+            {formErrors?.description && (
+              <span className="text-red font-semibold text-sm">
+                {formErrors.description}
+              </span>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
@@ -119,26 +198,36 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               <input
                 type="text"
                 id="issuedOn"
-                name="issuedOn"
+                name="issuedDate"
                 value={formData.issuedOn}
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
+                placeholder="e.g December 21, 1885"
                 className="border border-lightGray p-2 rounded-md bg-transparent"
-                required
               />
+              {formErrors?.issuedOn && (
+                <span className="text-red font-semibold text-sm">
+                  {formErrors.issuedOn}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="dueOn">Due On</label>
               <input
                 type="text"
                 id="dueOn"
-                name="dueOn"
+                name="dueDate"
+                placeholder="e.g December 21, 1885"
                 value={formData.dueOn}
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
                 className="border border-lightGray p-2 rounded-md bg-transparent"
-                required
               />
+              {formErrors?.dueOn && (
+                <span className="text-red font-semibold text-sm">
+                  {formErrors.dueOn}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="billFrom">Bill from</label>
@@ -150,8 +239,12 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
                 className="border border-lightGray p-2 rounded-md bg-transparent"
-                required
               />
+              {formErrors?.billFrom && (
+                <span className="text-red font-semibold text-sm">
+                  {formErrors.billFrom}
+                </span>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="billTo">Bill to</label>
@@ -163,8 +256,12 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
                 className="border border-lightGray p-2 rounded-md bg-transparent"
-                required
               />
+              {formErrors?.billTo && (
+                <span className="text-red font-semibold text-sm">
+                  {formErrors.billTo}
+                </span>
+              )}
             </div>
           </div>
           <div>
@@ -184,7 +281,6 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                         <td className=" border border-lightGray text-ellipsis rounded-md overflow-hidden">
                           <input
                             type="text"
-                            required
                             className="w-full p-2 bg-transparent"
                             name="item"
                             value={item.item}
@@ -197,7 +293,6 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                           <input
                             type="number"
                             step={0.0}
-                            required
                             className="w-full p-2 bg-transparent"
                             name="price"
                             value={item.price}
@@ -209,7 +304,6 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                         <td className=" border border-lightGray rounded-md overflow-hidden">
                           <input
                             type="number"
-                            required
                             className="w-full p-2 bg-transparent"
                             name="quantity"
                             value={item.quantity}
@@ -225,6 +319,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                     ))}
                 </tbody>
               </table>
+
               <div className="flex items-start justify-between">
                 <button
                   className="flex items-center gap-2"
@@ -255,12 +350,17 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               </div>
             </div>
           </div>
+          {formErrors?.items && (
+            <span className="block mb-4 text-red font-semibold text-sm">
+              {formErrors.items}
+            </span>
+          )}
           <span className="block text-xs">
             Payment due within 30 days. Late payments subject to a 5% fee.
           </span>
           <div className="flex flex-col gap-2">
             <label htmlFor="additionalNotes" className="text-sm">
-              Additional Notes
+              Additional Notes (Optional)
             </label>
             <textarea
               type="text"
@@ -280,13 +380,22 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               <button className="p-2">Preview</button>
             </div>
             <div className="flex flex-col gap-2 items-start">
-              <button
-                type="submit"
-                className="p-2 flex items-center gap-2 bg-blue text-gray rounded-md"
-              >
-                {" "}
-                <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
-              </button>
+              {status !== "pending" && (
+                <button
+                  type="submit"
+                  className="p-2 flex items-center gap-2 bg-blue text-gray rounded-md"
+                >
+                  <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
+                </button>
+              )}
+              {status === "pending" && (
+                <button
+                  type="submit"
+                  className="opacity-30 p-2 flex items-center gap-2 bg-blue text-gray rounded-md"
+                >
+                  <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
+                </button>
+              )}
               <button className="p-2">Print</button>
             </div>
           </div>

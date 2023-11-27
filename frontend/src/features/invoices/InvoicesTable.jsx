@@ -1,14 +1,25 @@
 import { useDispatch, useSelector } from "react-redux";
-import { addNewInvoice, selectInvoices } from "./invoicesSlice";
+import {
+  fetchInvoices,
+  selectInvoices,
+  selectInvoicesStatus,
+} from "./invoicesSlice";
 import { FaEllipsis } from "react-icons/fa6";
+import { useEffect } from "react";
 
+/**
+ * Component is responsible for taking the invoices data from the invoices slice and rendering it out in a table.
+ */
 const InvoicesTable = () => {
-  /**
-   * Component is responsible for taking the invoices data from the invoices slice and rendering it out in a table.
-   */
-
   const invoices = useSelector(selectInvoices);
+  const status = useSelector(selectInvoicesStatus);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchInvoices());
+    }
+  }, [invoices, dispatch]);
 
   return (
     <div className="bg-white rounded-md shadow-md pb-4">
@@ -32,50 +43,52 @@ const InvoicesTable = () => {
           </tr>
         </thead>
         <tbody>
-          {invoices.map((invoice) => {
-            return (
-              <tr key={invoice.id}>
-                <td className="p-2">{invoice.name}</td>
-                <td className="p-2">{invoice.amount.toLocaleString()}</td>
-                <td className="p-2">{invoice.dates}</td>
-                <td className="p-2">{invoice.invoiceNumber}</td>
-                <td className="p-2">
-                  <div className="flex items-center gap-4 justify-center">
-                    <div
-                      className={`${
-                        invoice.status === "paid"
-                          ? "bg-green"
-                          : invoice.status === "pending"
-                          ? "bg-orange"
-                          : "bg-red"
-                      } py-2 px-4 rounded-2xl text-white text-sm`}
-                    >
-                      {invoice.status.toUpperCase()}
-                    </div>
-                    <div className="group relative">
-                      <button>
-                        <FaEllipsis size={20} />
-                      </button>
-                      <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
-                        <button className="p-2 flex justify-start items-center">
-                          Edit
+          {status != "pending" &&
+            invoices &&
+            invoices.map((invoice) => {
+              return (
+                <tr key={invoice.id}>
+                  <td className="p-2">{invoice.name}</td>
+                  <td className="p-2">{invoice.amount.toLocaleString()}</td>
+                  <td className="p-2">{invoice.dates}</td>
+                  <td className="p-2">{invoice.invoiceNumber}</td>
+                  <td className="p-2">
+                    <div className="flex items-center gap-4 justify-center">
+                      <div
+                        className={`${
+                          invoice.status === "paid"
+                            ? "bg-green"
+                            : invoice.status === "pending"
+                            ? "bg-orange"
+                            : "bg-red"
+                        } py-2 px-4 rounded-2xl text-white text-sm`}
+                      >
+                        {invoice.status.toUpperCase()}
+                      </div>
+                      <div className="group relative">
+                        <button>
+                          <FaEllipsis size={20} />
                         </button>
-                        <button className="p-2 whitespace-nowrap flex justify-start items-center">
-                          Recent Payment
-                        </button>
-                        <button className="p-2 flex justify-start items-center">
-                          Print
-                        </button>
-                        <button className="p-2 flex justify-start items-center">
-                          Delete
-                        </button>
+                        <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
+                          <button className="p-2 flex justify-start items-center">
+                            Edit
+                          </button>
+                          <button className="p-2 whitespace-nowrap flex justify-start items-center">
+                            Recent Payment
+                          </button>
+                          <button className="p-2 flex justify-start items-center">
+                            Print
+                          </button>
+                          <button className="p-2 flex justify-start items-center">
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>

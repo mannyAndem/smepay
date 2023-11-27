@@ -19,6 +19,7 @@ export default {
         orange: "#FF9800",
         red: "#E74C3C",
         dark: "#1e1e1e",
+        paleDark: "#333",
       },
     },
   },
