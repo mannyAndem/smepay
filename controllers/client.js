@@ -106,7 +106,7 @@ exports.getClient = async (req, res) => {
 
 exports.fetchClients = async (req, res) => {
     try {
-        const client = await Client.find()
+        const client = await Client.find({ user: req.userId })
         notInDB(client, "No Clients Found")
 
         res.status(200).json({
@@ -128,7 +128,7 @@ exports.createInvoice = async (req, res) => {
         // const user = await User.findById("655e652c5eb5ec11f2cce543")
         const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
-
+        
         const invoice = new Invoice({
             recipientEmail, description, issuedDate, 
             dueDate, billFrom, billTo, user
@@ -138,10 +138,28 @@ exports.createInvoice = async (req, res) => {
         user.invoices.push(invoice)
         await user.save()
 
-        res.status(201).json({
-            message: 'Successfully created invoice',
-            data: invoice
+        // -- TRANSACTION --        
+        // add details of the invoice that was just 
+        // created by this user to the transaction
+
+        // send this to users, after payment has been made
+        // /smepay/inivoices/invoiceId
+
+        const transaction = new Transaction({
+            name: user.fullname, email: user.email, 
+            outstanding: amountOnTheInvoice, 
+            user: req.userId
         })
+
+        transaction.details.push(invoice)
+        await transaction.save()
+
+
+        res.status(201).json({
+            message: "Successfully Created invoice and opened/updated transaction",
+            info: error.message
+        })
+
     } catch (error) {
         res.status(500).json({
             message: "Error Creating Invoice",
@@ -171,8 +189,9 @@ exports.getInvoice = async (req, res) => {
 
 exports.fetchInvoice = async (req, res) => {
     try {
-        const invoices = await Invoice.find()
-        notInDB(invoices, 'No Invoice Found',)
+        // const invoices = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" })
+        const invoices = await Invoice.find({ user: req.userId })
+        notInDB(invoices, 'No Invoice Found')
     
         res.status(200).json({
             message: "Successfully Fetched All Invoice",
@@ -199,9 +218,11 @@ exports.addItem = async (req, res) => {
         const item = new Item({ name, price, qty, invoice })
         await item.save()
 
+        // add total amount on invoice
         invoice.items.push(item)
-        const updatedInvoice = await invoice.save()
+        invoice.totalAmount += (qty * price)
 
+        const updatedInvoice = await invoice.save()
         res.status(201).json({
             message: 'Successfully Added Item to Invoie',
             data: updatedInvoice
@@ -226,6 +247,7 @@ exports.getItem = async (req, res) => {
             message: "Successfully Fetched Item",
             data: item
         })
+        
     } catch (error) {
         res.status(200).json({
             message: "Error Fetching This Item",
@@ -235,8 +257,9 @@ exports.getItem = async (req, res) => {
 }
 
 exports.fetchItems = async (req, res) => {
+    const { invoiceId } = req.params
     try {
-        const items = await Item.find()
+        const items = await Item.find({ invoice: invoiceId})
         notInDB(items, 'Items Not Found',)
     
         res.status(200).json({
@@ -254,12 +277,7 @@ exports.fetchItems = async (req, res) => {
 
 
 // -- TRANSACTIONS --
-exports.generateTransaction = async (req, res) => {
-    validateFunc(req)
-    
-    const { name, email, outstandings } = req.body
-    // add details, a list of all invoices by this user
-}
+
 
 exports.getTransaction = async (req, res) => {
     const { transactionId } = req.params
@@ -283,7 +301,7 @@ exports.getTransaction = async (req, res) => {
 
 exports.fetchTransactions = async (req, res) => {
     try {
-        const transaction = await Transaction.find()
+        const transaction = await Transaction.find({ user: req.userId})
         notInDB(transaction, 'Transactions Not Found',)
     
         res.status(200).json({

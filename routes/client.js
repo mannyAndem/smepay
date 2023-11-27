@@ -24,11 +24,9 @@ router.post('/item/add/:invoiceId', clientCtrl.addItem);
 
 router.get('/item/:itemId', clientCtrl.getItem);
 
-router.get('/items', clientCtrl.fetchItems);
+router.get('/items/:invoiceId', clientCtrl.fetchItems);
 
 // -- TRANSACTIONS --
-router.post('/transaction/generate', clientCtrl.generateTransaction);
-
 router.get('/transaction/:transactionId', clientCtrl.getTransaction);
 
 router.get('/transactions', clientCtrl.fetchTransactions);

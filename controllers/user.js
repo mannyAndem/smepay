@@ -143,3 +143,56 @@ exports.onFailure = (req, res) => {
     console.log("Login in Failed")
     res.status(500).json({message: "Error login in"})
 }
+
+
+// PASSWORD RESET
+exports.resetPassword = async (req, res, next) => {
+    const { email } = req.body
+    
+    try {
+        const user = await User.findOne({ email })
+        if(!user){
+            const error = new Error("Email does not exist, please sign up!")
+            error.statusCode = 404
+            throw error
+        }
+        
+        const token = crypto.randomBytes(32).toString('hex')
+        user.token = token
+        user.tokenExp = Date.now() + 1800000 // expires in 30 mins
+        await user.save()
+
+        await funcSendMail(email, 'user/email-redirect', token)
+        res.status(200).json({message: "Successfully sent email"})
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.newPassword = async (req, res, next) => {
+    const { password, confirmpass } = req.body
+
+    if(password !== confirmpass){
+        const error = new Error("Passwords do not match")
+        error.statusCode = 401
+        throw error
+    }
+
+    const user = await User.findById(req.userId)
+    if(!user){
+        const error = new Error("User Not Found")
+        error.statusCode = 403
+        throw error
+    }
+
+    const hashPassword = await bcrypt.hash(password, 12)
+    user.password = hashPassword
+    user.token = undefined
+    user.tokenExp = undefined
+
+    const newUser = await user.save()
+    res.status(200).json({ 
+        message: `Successfully reset password for user: ${newUser.email}`
+    })
+}

@@ -15,6 +15,10 @@ const transcationSchema = new Schema(
             type: Number,
             required: true
         },
+        status: {
+            type: String, 
+            default: 'pending'
+        },
         user: {
             type: Schema.Types.ObjectId,
             ref: 'User',
