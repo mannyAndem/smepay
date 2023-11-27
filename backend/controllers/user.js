@@ -7,6 +7,7 @@ const passport = require('passport')
 const User = require('../models/user')
 const { json_secret } = require('../config/secret_keys')
 
+
 const userDetailsFunc = (userParam, errMsg) => {
     if(!userParam){
         const error = new Error(errMsg)
