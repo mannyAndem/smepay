@@ -2,34 +2,35 @@ const express = require('express')
 const router = express.Router();
 
 const clientCtrl = require('../controllers/client')
+const authMid = require('../config/auth')
 
 
 // -- CLIENTS --
-router.post('/client/add', clientCtrl.addClient);
+router.post('/client/add', authMid, clientCtrl.addClient);
 
-router.get('/client/:clientId', clientCtrl.getClient);
+router.get('/client/:clientId', authMid, clientCtrl.getClient);
 
-router.get('/clients', clientCtrl.fetchClients);
+router.get('/clients', authMid, clientCtrl.fetchClients);
 
 
 // -- INVOICE --
-router.post('/invoice/create', clientCtrl.createInvoice);
+router.post('/invoice/create', authMid, clientCtrl.createInvoice);
 
-router.get('/invoice/:invoiceId', clientCtrl.getInvoice);
+router.get('/invoice/:invoiceId', authMid, clientCtrl.getInvoice);
 
-router.get('/invoice', clientCtrl.fetchInvoice);
+router.get('/invoice', authMid, clientCtrl.fetchInvoice);
 
 // -- ITEMS --
-router.post('/item/add/:invoiceId', clientCtrl.addItem);
+router.post('/item/add/:invoiceId', authMid, clientCtrl.addItem);
 
-router.get('/item/:itemId', clientCtrl.getItem);
+router.get('/item/:itemId', authMid, clientCtrl.getItem);
 
-router.get('/items/:invoiceId', clientCtrl.fetchItems);
+router.get('/items/:invoiceId', authMid, clientCtrl.fetchItems);
 
 // -- TRANSACTIONS --
-router.get('/transaction/:transactionId', clientCtrl.getTransaction);
+router.get('/transaction/:transactionId', authMid, clientCtrl.getTransaction);
 
-router.get('/transactions', clientCtrl.fetchTransactions);
+router.get('/transactions', authMid, clientCtrl.fetchTransactions);
 
 
 

@@ -154,7 +154,6 @@ exports.createInvoice = async (req, res) => {
         transaction.details.push(invoice)
         await transaction.save()
 
-
         res.status(201).json({
             message: "Successfully Created invoice and opened/updated transaction",
             info: error.message
@@ -163,6 +162,23 @@ exports.createInvoice = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Error Creating Invoice",
+            info: error.message
+        })
+    }
+}
+
+exports.makePayment = async (req, res) => {
+    const { invoiceId } = req.parmas
+    // validate user request
+    // get amount from invoice
+
+    try {
+        const invoice = await Invoice.findById(invoiceId)
+        //
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Error Processing Payment",
             info: error.message
         })
     }
@@ -277,8 +293,6 @@ exports.fetchItems = async (req, res) => {
 
 
 // -- TRANSACTIONS --
-
-
 exports.getTransaction = async (req, res) => {
     const { transactionId } = req.params
 

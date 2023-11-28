@@ -4,11 +4,12 @@ const router = express.Router()
 
 const User = require('../models/user')
 const userCtrl = require('../controllers/user')
+const authMid = require('../config/auth')
 
 
-router.get('/smepay/users', userCtrl.getUsers)
+router.get('/smepay/users', authMid, userCtrl.getUsers)
 
-router.get('/smepay/user/:userId', userCtrl.getUser)
+router.get('/smepay/user/:userId', authMid, userCtrl.getUser)
 
 router.post('/smepay/signup', [
     body('email').isEmail().withMessage('Invalid email')
@@ -42,6 +43,10 @@ router.get('/auth/google/success',
 
 router.get('/auth/google/failure', userCtrl.onFailure)
 
+// PASSWORD RESET
+router.post('/user/reset-password', authMid, userCtrl.resetPassword)
 
+// router.get('/user/email-redirect/?token', userCtrl.emailRedirect)
+router.put('/user/new-password', authMid, userCtrl.newPassword)
 
 module.exports = router;
