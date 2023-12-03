@@ -1,14 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useNavigationType } from "react-router-dom";
 import signupImg from "../../assets/signup-img.png";
 import googleIcon from "../../assets/google.svg";
 import facebookIcon from "../../assets/logos_facebook.svg";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   login,
-  selectAuthError,
-  selectAuthStatus,
+  resetLoginStatus,
+  selectCurrentUser,
+  selectLoginStatus,
 } from "../../features/authentication/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import toast, { Toaster } from "react-hot-toast";
 
 /**
  * Component is responsible for rendering sign up page
@@ -23,9 +25,11 @@ import { useDispatch, useSelector } from "react-redux";
 //   "confirmpass": "testuserpassword"
 // }'
 const Login = () => {
-  const status = useSelector(selectAuthStatus);
-  const error = useSelector(selectAuthError);
+  const status = useSelector(selectLoginStatus);
+  const currentUser = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -69,8 +73,21 @@ const Login = () => {
     dispatch(login(formData));
   };
 
+  useEffect(() => {
+    if (status === "success") {
+      toast.success("Login successful");
+      console.log(currentUser);
+      navigate("/dashboard");
+    }
+    if (status === "error") {
+      toast.error("Failed to login");
+      dispatch(resetLoginStatus());
+    }
+  }, [status]);
+
   return (
     <div className="min-h-screen flex">
+      <Toaster />
       <div className="min-h-screen w-full">
         <img src={signupImg} className="w-full h-full object-cover" />
       </div>
@@ -101,7 +118,7 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="Enter your email"
-                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl"
+                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl focus:outline-blue"
               />
               {formErrors?.email && (
                 <span className="text-xs text-red">{formErrors.email}</span>
@@ -119,7 +136,7 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Create a password"
-                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl"
+                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl focus:outline-blue"
               />
               {formErrors?.password && (
                 <span className="text-xs text-red">{formErrors.password}</span>
@@ -141,11 +158,6 @@ const Login = () => {
               >
                 Sign in
               </button>
-            )}
-            {status === "error" && (
-              <span className="text-sm font-semibold text-red text-center">
-                {error}
-              </span>
             )}
           </form>
         </div>

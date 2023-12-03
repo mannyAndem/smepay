@@ -11,13 +11,12 @@ const InvoiceStatsCard = () => {
   const invoices = useSelector(selectInvoices);
   const status = useSelector(selectInvoicesStatus);
 
-  const paidInvoices = invoices?.filter((invoice) => invoice.status === "paid");
-  const pendingInvoices = invoices?.filter(
-    (invoice) => invoice.status === "pending"
-  );
-  const overdueInvoices = invoices?.filter(
-    (invoice) => invoice.status === "overdue"
-  );
+  const paidInvoices =
+    invoices?.filter((invoice) => invoice.status === "paid") ?? 0;
+  const pendingInvoices =
+    invoices?.filter((invoice) => invoice.status === "pending") ?? 0;
+  const overdueInvoices =
+    invoices?.filter((invoice) => invoice.status === "overdue") ?? 0;
 
   const data = {
     labels: ["Paid", "Pending", "Overdue"],
@@ -38,11 +37,14 @@ const InvoiceStatsCard = () => {
     <div className="h-full w-full flex flex-col p-6 bg-white justify-between shadow-md rounded-md">
       <span className="text-2xl">Invoice Status</span>
       {status === "error" && (
-        <span className="block text-center text-red-500">
+        <span className="block text-center text-red-500 font-semibold text-red">
           An error occurred
         </span>
       )}
-      {status != "error" && status != "pending" && (
+      {status === "pending" && (
+        <span className="block text-center font-semibold">Loading...</span>
+      )}
+      {status === "success" && (
         <>
           <div className="w-full self-center flex items-center justify-center mt-4">
             <Doughnut
@@ -57,19 +59,21 @@ const InvoiceStatsCard = () => {
             <div className="flex items-center gap-1">
               <div className="w-4 h-4 bg-green rounded-full"></div>
               <span className="text-sm">
-                Paid - {(paidInvoices.length / invoices.length) * 100}%
+                Paid - {(paidInvoices.length / invoices.length || 0) * 100}%
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-orange rounded-full"></div>
               <span className="text-sm">
-                Pending - {(pendingInvoices.length / invoices.length) * 100}%
+                Pending -{" "}
+                {(pendingInvoices.length / invoices.length || 0) * 100}%
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-red rounded-full"></div>
               <span className="text-sm">
-                Overdue - {(overdueInvoices.length / invoices.length) * 100}%
+                Overdue -{" "}
+                {(overdueInvoices.length / invoices.length || 0) * 100}%
               </span>
             </div>
           </div>

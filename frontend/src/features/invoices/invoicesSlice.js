@@ -1,27 +1,49 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { nanoid } from "@reduxjs/toolkit";
 import axios from "../../api/axios";
 
 export const createInvoice = createAsyncThunk(
   "invoices/create",
-  async (data, items) => {
+  async ({ data, items, token }) => {
+    console.log(token);
     const invoiceResponse = await axios.post(
       "/invoice/create",
-      JSON.stringify(data)
+      JSON.stringify(data),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
     );
-    const itemsResponse = await axios.post(
-      "/item/add/:invoiceId",
-      JSON.stringify(items)
-    );
+    // await items.forEach(async (item) => {
+    //   await axios.post(
+    //     "/item/add/:invoiceId",
+    //     JSON.stringify(item, ["name", "price", "qty"]),
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //     }
+    //   );
+    // });
+
     return invoiceResponse.data;
   }
 );
 
-export const fetchInvoices = createAsyncThunk("invoices/fetch", async () => {
-  const response = await axios.get("/invoice");
-  console.log(response.data);
-  return response.data.data;
-});
+export const fetchInvoices = createAsyncThunk(
+  "invoices/fetch",
+  async (token) => {
+    const response = await axios.get("/invoice", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(response.data);
+    return response.data.data;
+  }
+);
 
 const initialState = {
   data: null,

@@ -1,14 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import signupImg from "../../assets/signup-img.png";
-import googleIcon from "../../assets/google.svg";
-import facebookIcon from "../../assets/logos_facebook.svg";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectAuthError,
-  selectAuthStatus,
+  resetSignupStatus,
+  selectSignupStatus,
   signup,
 } from "../../features/authentication/authSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 /**
  * Component is responsible for rendering sign up page
@@ -23,8 +22,7 @@ import {
 //   "confirmpass": "testuserpassword"
 // }'
 const Signup = () => {
-  const status = useSelector(selectAuthStatus);
-  const error = useSelector(selectAuthError);
+  const status = useSelector(selectSignupStatus);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -66,7 +64,7 @@ const Signup = () => {
     if (formData.password.length < 6) {
       setFormErrors((prev) => ({
         ...prev,
-        password: "Password must be atleast 6 characters long",
+        password: "Password must be at least 6 characters long",
       }));
       validateCounter++;
     }
@@ -104,8 +102,23 @@ const Signup = () => {
     );
   };
 
+  // toast error message if sign up fails.
+  useEffect(() => {
+    if (status === "error") {
+      toast.error("Failed to signup");
+      dispatch(resetSignupStatus());
+    }
+    if (status === "success") {
+      toast.success("Successfully signed up!");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+    }
+  }, [status]);
+
   return (
     <div className="min-h-screen flex">
+      <Toaster />
       <div className="min-h-screen w-full">
         <img src={signupImg} className="w-full h-full object-cover" />
       </div>
@@ -136,7 +149,7 @@ const Signup = () => {
                     placeholder="Enter first name"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl"
+                    className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl focus:outline-blue"
                   />
                   {formErrors?.firstName && (
                     <span className="text-xs text-red">
@@ -153,7 +166,7 @@ const Signup = () => {
                     onChange={handleInputChange}
                     placeholder="Enter last name"
                     name="lastName"
-                    className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl"
+                    className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl focus:outline-blue"
                   />
                   {formErrors?.lastName && (
                     <span className="text-xs text-red">
@@ -176,7 +189,7 @@ const Signup = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="Enter your email"
-                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl"
+                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl focus:outline-blue"
               />
               {formErrors?.email && (
                 <span className="text-xs text-red">{formErrors.email}</span>
@@ -194,7 +207,7 @@ const Signup = () => {
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Create a password"
-                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl"
+                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl focus:outline-blue"
               />
               <span className="text-xs">Must be at least 6 characters.</span>
               {formErrors?.password && (
@@ -213,7 +226,7 @@ const Signup = () => {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="Confirm your password"
-                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl"
+                className="text-sm w-full bg-white border border-lightGray p-3 rounded-3xl focus:outline-blue"
               />
               {formErrors?.confirmPassword && (
                 <span className="text-xs text-red">
@@ -250,11 +263,6 @@ const Signup = () => {
               >
                 Sign up
               </button>
-            )}
-            {status === "error" && (
-              <span className="block text-red text-sm font-semibold text-center">
-                {error}
-              </span>
             )}
           </form>
         </div>

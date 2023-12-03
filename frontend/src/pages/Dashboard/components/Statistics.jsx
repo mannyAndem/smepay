@@ -50,12 +50,6 @@ const Statistics = () => {
     },
   ];
 
-  const invoiceStatistics = {
-    total: 100,
-    paid: 50,
-    pending: 35,
-    overdue: 15,
-  };
   return (
     <div className="grid grid-cols-3 grid-rows-2 gap-10">
       {status === "pending" && (
@@ -74,7 +68,7 @@ const Statistics = () => {
           </div>
         ))}
       <div className="row-start-1 col-start-3 col-span-1 row-span-2">
-        <InvoiceStatsCard statistic={invoiceStatistics} />
+        <InvoiceStatsCard />
       </div>
     </div>
   );

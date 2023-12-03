@@ -6,6 +6,7 @@ import {
 } from "./invoicesSlice";
 import { FaEllipsis } from "react-icons/fa6";
 import { useEffect } from "react";
+import { selectCurrentUser } from "../authentication/authSlice";
 
 /**
  * Component is responsible for taking the invoices data from the invoices slice and rendering it out in a table.
@@ -13,11 +14,12 @@ import { useEffect } from "react";
 const InvoicesTable = () => {
   const invoices = useSelector(selectInvoices);
   const status = useSelector(selectInvoicesStatus);
+  const currentUser = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (status === "idle") {
-      dispatch(fetchInvoices());
+      dispatch(fetchInvoices(currentUser.token));
     }
   }, [invoices, dispatch]);
 
@@ -36,7 +38,9 @@ const InvoicesTable = () => {
         <span className="block text-center">Loading...</span>
       )}
       {status === "error" && (
-        <span className="block text-center text-red">An error occurred</span>
+        <span className="block text-center text-red font-semibold">
+          An error occurred
+        </span>
       )}
       {status != "pending" && status != "error" && invoices && (
         <table className="w-full text-center">
@@ -54,7 +58,7 @@ const InvoicesTable = () => {
               return (
                 <tr key={invoice.id}>
                   <td className="p-2">{invoice.billTo}</td>
-                  <td className="p-2">{invoice._v}</td>
+                  <td className="p-2">{invoice.totalAmount}</td>
                   <td className="p-2">{invoice.issuedDate}</td>
                   <td className="p-2">{invoice.id}</td>
                   <td className="p-2">
