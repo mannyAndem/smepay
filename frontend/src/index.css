@@ -15,3 +15,7 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-blue rounded-full bg-opacity-30;
 }
+
+::-webkit-file-upload-button {
+  @apply bg-transparent border-none cursor-pointer;
+}

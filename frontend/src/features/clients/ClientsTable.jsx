@@ -1,9 +1,22 @@
-import { useSelector } from "react-redux";
-import { selectClients } from "./clientSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchClients,
+  selectClients,
+  selectClientsStatus,
+} from "./clientSlice";
 import { FaEllipsis } from "react-icons/fa6";
+import { useEffect } from "react";
+import { selectCurrentUser } from "../authentication/authSlice";
 
 const ClientsTable = () => {
   const clients = useSelector(selectClients);
+  const status = useSelector(selectClientsStatus);
+  const currentUser = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchClients(currentUser.token));
+  }, [clients, dispatch]);
 
   return (
     <div className=" my-16  bg-white rounded-md shadow-md ">
@@ -34,43 +47,44 @@ const ClientsTable = () => {
           </tr>
         </thead>
         <tbody>
-          {clients.map((client) => {
-            return (
-              <tr key={client.id}>
-                <td className="p-2">{client.name}</td>
-                <td className="p-2">{client.email}</td>
-                <td className="p-2">
-                  {client.totalOutstanding.toLocaleString()}
-                </td>
-                <td className="p-2">
-                  <div className="flex items-center gap-4 justify-center">
-                    <button className="p-2 w-1/2 bg-blue rounded-2xl text-gray font-semibold text-sm">
-                      View
-                    </button>
-                    <div className="group relative">
-                      <button>
-                        <FaEllipsis size={20} />
+          {status === "success" &&
+            clients.map((client) => {
+              return (
+                <tr key={client.id}>
+                  <td className="p-2">{client.name}</td>
+                  <td className="p-2">{client.email}</td>
+                  <td className="p-2">
+                    {client.totalOutstanding.toLocaleString()}
+                  </td>
+                  <td className="p-2">
+                    <div className="flex items-center gap-4 justify-center">
+                      <button className="p-2 w-1/2 bg-blue rounded-2xl text-gray font-semibold text-sm">
+                        View
                       </button>
-                      <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
-                        <button className="p-2 flex justify-start items-center">
-                          Edit
+                      <div className="group relative">
+                        <button>
+                          <FaEllipsis size={20} />
                         </button>
-                        <button className="p-2 whitespace-nowrap flex justify-start items-center">
-                          Recent Payment
-                        </button>
-                        <button className="p-2 flex justify-start items-center">
-                          Print
-                        </button>
-                        <button className="p-2 flex justify-start items-center">
-                          Delete
-                        </button>
+                        <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
+                          <button className="p-2 flex justify-start items-center">
+                            Edit
+                          </button>
+                          <button className="p-2 whitespace-nowrap flex justify-start items-center">
+                            Recent Payment
+                          </button>
+                          <button className="p-2 flex justify-start items-center">
+                            Print
+                          </button>
+                          <button className="p-2 flex justify-start items-center">
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>

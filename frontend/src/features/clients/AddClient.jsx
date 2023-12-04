@@ -1,7 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { addClient, selectAddClientStatus } from "./clientSlice";
+import {
+  addClient,
+  resetAddClientStatus,
+  selectAddClientStatus,
+} from "./clientSlice";
+import toast from "react-hot-toast";
 
 const AddClient = ({ setAddClientModal }) => {
   const status = useSelector(selectAddClientStatus);
@@ -63,12 +68,17 @@ const AddClient = ({ setAddClientModal }) => {
   const handeSubmit = (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    if (!validateForm() || !image) {
       return;
     }
 
-    dispatch(addClient({ ...formData, image: imageInput }));
+    dispatch(addClient({ ...formData, image }));
   };
+
+  if (status === "error") {
+    toast.error("Failed to add client");
+    dispatch(resetAddClientStatus());
+  }
 
   useEffect(() => {
     if (imageInput) {
@@ -222,7 +232,7 @@ const AddClient = ({ setAddClientModal }) => {
                       e.target.checked == true && handleInputChange(e)
                     }
                   />
-                  <label htmlFor="regular" className="text-xs">
+                  <label htmlFor="inactive" className="text-xs">
                     Inactive
                   </label>
                 </div>
@@ -250,11 +260,20 @@ const AddClient = ({ setAddClientModal }) => {
               <label htmlFor="notes" className="text-sm">
                 Client Profile Image
               </label>
-              <input
-                type="file"
-                onChange={(e) => setImageInput(e.target.files[0])}
-              />
-              {image && <img src={image} width={200} height={200} />}
+              <div className="relative w-40 h-40 flex items-center justify-center border-blue border">
+                <input
+                  type="file"
+                  onChange={(e) => setImageInput(e.target.files[0])}
+                />
+                {image && (
+                  <img
+                    src={image}
+                    className="z-10 absolute w-full h-full object-cover"
+                    width={200}
+                    height={200}
+                  />
+                )}
+              </div>
             </div>
             <div className="mt-12 flex items-center gap-6 justify-end">
               <button

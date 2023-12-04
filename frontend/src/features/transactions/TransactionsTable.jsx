@@ -1,12 +1,17 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaEllipsis } from "react-icons/fa6";
-import { selectTransactions } from "./transactionsSlice";
+import {
+  selectTransactions,
+  selectTransactionsStatus,
+} from "./transactionsSlice";
 
 /**
  * Component is responsible for taking the transactions data from the transactions slice and rendering it out in a table.
  */
 const TransactionsTable = () => {
   const transactions = useSelector(selectTransactions);
+  const dispatch = useDispatch();
+  const status = useSelector(selectTransactionsStatus);
 
   return (
     <div className=" my-16 bg-white rounded-md shadow-md ">

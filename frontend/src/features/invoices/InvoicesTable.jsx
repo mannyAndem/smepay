@@ -6,6 +6,7 @@ import {
 } from "./invoicesSlice";
 import { FaEllipsis } from "react-icons/fa6";
 import { useEffect } from "react";
+import { selectCurrentUser } from "../authentication/authSlice";
 
 /**
  * Component is responsible for taking the invoices data from the invoices slice and rendering it out in a table.
@@ -13,11 +14,12 @@ import { useEffect } from "react";
 const InvoicesTable = () => {
   const invoices = useSelector(selectInvoices);
   const status = useSelector(selectInvoicesStatus);
+  const currentUser = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (status === "idle") {
-      dispatch(fetchInvoices());
+      dispatch(fetchInvoices(currentUser.token));
     }
   }, [invoices, dispatch]);
 
@@ -32,26 +34,33 @@ const InvoicesTable = () => {
           </select>
         </div>
       </div>
-      <table className="w-full text-center">
-        <thead className="bg-veryDarkBlue text-gray font-semibold">
-          <tr>
-            <th className="p-2 border-r border-gray">Name</th>
-            <th className="p-2 border-x border-gray">Amount</th>
-            <th className="p-2 border-x border-gray">Dates</th>
-            <th className="p-2 border-x border-gray">Invoice Number</th>
-            <th className="p-2 border-l border-gray">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {status != "pending" &&
-            invoices &&
-            invoices.map((invoice) => {
+      {status === "pending" && (
+        <span className="block text-center">Loading...</span>
+      )}
+      {status === "error" && (
+        <span className="block text-center text-red font-semibold">
+          An error occurred
+        </span>
+      )}
+      {status != "pending" && status != "error" && invoices && (
+        <table className="w-full text-center">
+          <thead className="bg-veryDarkBlue text-gray font-semibold">
+            <tr>
+              <th className="p-2 border-r border-gray">Name</th>
+              <th className="p-2 border-x border-gray">Amount</th>
+              <th className="p-2 border-x border-gray">Dates</th>
+              <th className="p-2 border-x border-gray">Invoice Number</th>
+              <th className="p-2 border-l border-gray">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((invoice) => {
               return (
                 <tr key={invoice.id}>
-                  <td className="p-2">{invoice.name}</td>
-                  <td className="p-2">{invoice.amount.toLocaleString()}</td>
-                  <td className="p-2">{invoice.dates}</td>
-                  <td className="p-2">{invoice.invoiceNumber}</td>
+                  <td className="p-2">{invoice.billTo}</td>
+                  <td className="p-2">{invoice.totalAmount}</td>
+                  <td className="p-2">{invoice.issuedDate}</td>
+                  <td className="p-2">{invoice.id}</td>
                   <td className="p-2">
                     <div className="flex items-center gap-4 justify-center">
                       <div
@@ -89,8 +98,9 @@ const InvoicesTable = () => {
                 </tr>
               );
             })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

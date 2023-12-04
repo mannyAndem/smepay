@@ -4,6 +4,11 @@ import projectsIcon from "../../../assets/eos-icons_project-outlined.png";
 import paidIcon from "../../../assets/icon-paid.png";
 import clientsIcon from "../../../assets/clients-icon.png";
 import invoiceIcon from "../../../assets/invoice-icon.png";
+import { useSelector } from "react-redux";
+import {
+  selectInvoices,
+  selectInvoicesStatus,
+} from "../../../features/invoices/invoicesSlice";
 
 const Statistics = () => {
   /**
@@ -11,48 +16,59 @@ const Statistics = () => {
    */
 
   // this is a test constant,  will be replaced with data from server
+
+  const invoices = useSelector(selectInvoices);
+  const status = useSelector(selectInvoicesStatus);
   const statistics = [
     {
       name: "Projects",
-      amount: 50,
+      amount: invoices?.length,
       isCurrency: false,
       icon: projectsIcon,
     },
     {
       name: "Paid",
-      amount: 200000,
+      amount: invoices?.reduce(
+        (acc, curr) =>
+          acc + curr.items.reduce((acc, curr) => acc + curr.price, 0),
+        0
+      ),
       isCurrency: true,
       icon: paidIcon,
     },
     {
       name: "Clients",
-      amount: 30,
+      amount: invoices?.length,
       isCurrency: false,
       icon: clientsIcon,
     },
     {
       name: "Invoices sent",
-      amount: 50,
+      amount: invoices?.length,
       isCurrency: false,
       icon: invoiceIcon,
     },
   ];
 
-  const invoiceStatistics = {
-    total: 100,
-    paid: 50,
-    pending: 35,
-    overdue: 15,
-  };
   return (
     <div className="grid grid-cols-3 grid-rows-2 gap-10">
-      {statistics.map((statistic) => (
-        <div className="col-span-1 row-span-1 h-full">
-          <StatisticCard statistic={statistic} />
-        </div>
-      ))}
+      {status === "pending" && (
+        <span className="text-center font-semibold">Loading...</span>
+      )}
+      {status === "error" && (
+        <span className="text-center text-red font-semibold">
+          An error occurred
+        </span>
+      )}
+      {status != "pending" &&
+        status != "error" &&
+        statistics.map((statistic) => (
+          <div className="col-span-1 row-span-1 h-full">
+            <StatisticCard statistic={statistic} />
+          </div>
+        ))}
       <div className="row-start-1 col-start-3 col-span-1 row-span-2">
-        <InvoiceStatsCard statistic={invoiceStatistics} />
+        <InvoiceStatsCard />
       </div>
     </div>
   );

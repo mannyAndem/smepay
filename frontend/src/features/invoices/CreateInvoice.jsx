@@ -4,9 +4,12 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createInvoice,
+  resetCreateInvoiceStatus,
   selectCreateInvoiceError,
   selectCreateInvoiceStatus,
 } from "./invoicesSlice";
+import toast, { Toaster } from "react-hot-toast";
+import { selectCurrentUser } from "../authentication/authSlice";
 
 /**
  * Component is responsible for displaying the create invoice modal and submitting the form's dats to the backend
@@ -16,8 +19,10 @@ import {
 const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
   const status = useSelector(selectCreateInvoiceStatus);
   const error = useSelector(selectCreateInvoiceError);
+  const currentUser = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
 
+  console.log(currentUser.token);
   // State to hold form data
   const [formData, setFormData] = useState({
     recipientEmail: "",
@@ -69,7 +74,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
       setFormErrors((prev) => ({ ...prev, billTo: "This field is required" }));
       validateCounter++;
     }
-    if (!invoiceItems.some((item) => item.item.length > 0)) {
+    if (!invoiceItems.some((item) => item.name.length > 0)) {
       setFormErrors((prev) => ({
         ...prev,
         items: "Atleast one item is required",
@@ -86,9 +91,9 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
   //   state to hold invoice itemes
   const [invoiceItems, setInvoiceItems] = useState([
     {
-      item: "",
+      name: "",
       price: 0,
-      quantity: 0,
+      qty: 0,
       get total() {
         return this.price * this.quantity ?? 0;
       },
@@ -98,9 +103,9 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
   // function to add new invoice item
   const addItem = () => {
     const itemData = {
-      item: "",
+      name: "",
       price: 0,
-      quantity: 0,
+      qty: 0,
       get total() {
         return this.price * this.quantity;
       },
@@ -117,7 +122,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               ...item,
               [e.target.name]: e.target.value,
               get total() {
-                return this.price * this.quantity;
+                return this.price * this.qty;
               },
             }
           : item
@@ -132,11 +137,21 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
       return;
     }
 
-    dispatch(createInvoice(formData));
+    let items = invoiceItems.filter((item) => item.name.length > 0);
+    console.log(currentUser.token);
+    dispatch(
+      createInvoice({ data: formData, items, token: currentUser.token })
+    );
   };
-  console.log(formData);
+
+  if (status === "error") {
+    toast.error(error);
+    dispatch(resetCreateInvoiceStatus());
+  }
+
   return (
     <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-16 py-2 z-50">
+      <Toaster />
       <div className="bg-gray rounded-md shadow-md w-1/2 pb-4 overflow-y-auto">
         <div className="flex items-center gap-16  p-6 border-b border-lightGray">
           <button onClick={() => setInvoiceModalVisibilty(false)}>
@@ -167,7 +182,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               value={formData.email}
               onChange={(e) => handleFormInputChange(e)}
               autoComplete="off"
-              className="border border-lightGray p-2 rounded-md bg-transparent"
+              className="border border-lightGray p-2 rounded-md bg-transparent "
             />
             {formErrors?.email && (
               <span className="text-red font-semibold text-sm">
@@ -184,7 +199,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               value={formData.description}
               onChange={(e) => handleFormInputChange(e)}
               autoComplete="off"
-              className="border border-lightGray p-2 rounded-md bg-transparent"
+              className="border border-lightGray p-2 rounded-md bg-transparent "
             />
             {formErrors?.description && (
               <span className="text-red font-semibold text-sm">
@@ -203,7 +218,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
                 placeholder="e.g December 21, 1885"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
+                className="border border-lightGray p-2 rounded-md bg-transparent "
               />
               {formErrors?.issuedOn && (
                 <span className="text-red font-semibold text-sm">
@@ -221,7 +236,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 value={formData.dueOn}
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
+                className="border border-lightGray p-2 rounded-md bg-transparent "
               />
               {formErrors?.dueOn && (
                 <span className="text-red font-semibold text-sm">
@@ -238,7 +253,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 value={formData.billFrom}
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
+                className="border border-lightGray p-2 rounded-md bg-transparent "
               />
               {formErrors?.billFrom && (
                 <span className="text-red font-semibold text-sm">
@@ -255,7 +270,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 value={formData.billTo}
                 onChange={(e) => handleFormInputChange(e)}
                 autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
+                className="border border-lightGray p-2 rounded-md bg-transparent "
               />
               {formErrors?.billTo && (
                 <span className="text-red font-semibold text-sm">
@@ -281,9 +296,9 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                         <td className=" border border-lightGray text-ellipsis rounded-md overflow-hidden">
                           <input
                             type="text"
-                            className="w-full p-2 bg-transparent"
-                            name="item"
-                            value={item.item}
+                            className="w-full p-2 bg-transparent "
+                            name="name"
+                            value={item.name}
                             onChange={(e) =>
                               handleInvoiceItemsInputChange(e, index)
                             }
@@ -304,9 +319,9 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                         <td className=" border border-lightGray rounded-md overflow-hidden">
                           <input
                             type="number"
-                            className="w-full p-2 bg-transparent"
-                            name="quantity"
-                            value={item.quantity}
+                            className="w-full p-2 bg-transparent "
+                            name="qty"
+                            value={item.qty}
                             onChange={(e) =>
                               handleInvoiceItemsInputChange(e, index)
                             }
@@ -369,7 +384,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               value={formData.additionalNotes}
               onChange={(e) => handleFormInputChange(e)}
               autoComplete="off"
-              className="border bg-transparent  border-lightGray p-2 rounded-md"
+              className="border bg-transparent  border-lightGray p-2 rounded-md "
             ></textarea>
           </div>
           <div className="mt-8 flex justify-between">
