@@ -7,7 +7,7 @@ const Invoice = require('../models/invoice')
 const Item = require('../models/item')
 const Transaction = require('../models/transaction')
 
-const { cloudinary_api_key, cloudinary_api_secret, cloudinary_name } = require('../config/secret_keys')
+const { cloudinary_api_key, cloudinary_api_secret, cloudinary_name, paystack_secret_key } = require('../config/secret_keys')
 
 cloudinary.config({
     cloud_name: cloudinary_name,
@@ -29,7 +29,8 @@ const validateFunc = (request) => {
     const errors = validationResult(request)
     if(!errors.isEmpty()){
         const error = new Error("Validation Failed")
-        error.statusCode = 401
+        error.statusCode = 422
+        error.data = errors.array()[0]
         throw error
     }
 }
@@ -122,11 +123,14 @@ exports.fetchClients = async (req, res) => {
 
 // -- INVOICE --
 exports.createInvoice = async (req, res) => {
+    validateFunc(req)
+
     const { recipientEmail, description, issuedDate, 
         dueDate, billFrom, billTo } = req.body
+
     try {
-        // const user = await User.findById("655e652c5eb5ec11f2cce543")
-        const user = await User.findById(req.userId)
+        const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
         
         const invoice = new Invoice({
@@ -139,24 +143,40 @@ exports.createInvoice = async (req, res) => {
         await user.save()
 
         // -- TRANSACTION --        
-        // add details of the invoice that was just 
-        // created by this user to the transaction
-
-        // send this to users, after payment has been made
-        // /smepay/inivoices/invoiceId
-
-        const transaction = new Transaction({
-            name: user.fullname, email: user.email, 
-            outstanding: amountOnTheInvoice, 
-            user: req.userId
+        // first check if this user has any transaction with
+        // a status of pending, if yes add this invoice to it
+        // else, create a new transaction, then add this invoice
+        // to it
+        const existingTrans = await Transaction.find({
+            $and: [
+                { user: req.userId },
+                { status: 'pending'}
+            ]
         })
-
-        transaction.details.push(invoice)
-        await transaction.save()
+        if(existingTrans){
+            // push this invoice into this transaction
+            // increase its outstanding by the amount on invoice
+            existingTrans.details.push(invoice)
+            existingTrans.outstanding += invoice.totalAmount
+            await existingTrans.save()
+        }
+        if(!existingTrans){
+            // create new transaction for this user
+            // gets a default pending status
+            const transaction = new Transaction({
+                name: user.fullname, email: user.email, 
+                outstanding: invoice.totalAmount, 
+                // user: req.userId
+                user: "655e652c5eb5ec11f2cce543"
+            })
+    
+            transaction.details.push(invoice)
+            await transaction.save()
+        }
 
         res.status(201).json({
-            message: "Successfully Created invoice and opened/updated transaction",
-            info: error.message
+            message: "Successfully created invoice and opened/updated transaction",
+            data: invoice
         })
 
     } catch (error) {
@@ -167,21 +187,67 @@ exports.createInvoice = async (req, res) => {
     }
 }
 
-exports.makePayment = async (req, res) => {
-    const { invoiceId } = req.parmas
-    // validate user request
-    // get amount from invoice
+exports.initiatePayment = async (req, res) => {
+    const { transactionId } = req.parmas
 
+    const options = {
+        hostname: 'api.paystack.co',
+        port: 443,
+        path: '/transaction/initialize',
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${paystack_secret_key}`,
+            'Content-Type': 'application/json',
+        }
+    }
+    
     try {
-        const invoice = await Invoice.findById(invoiceId)
-        //
+        const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const user = await User.findById(req.userId)
+        notInDB(user, "User Not Found")
+        
+        const transaction = await Transaction.find({
+            $and: [
+                { _id: transactionId},
+                // { user: req.userId }
+                { user: "655e652c5eb5ec11f2cce543" }
+            ]
+        })
+        notInDB(transaction, "Transaction Not Found")
+
+        const amount = transaction.outstanding
+        const email = user.email
+        const params = JSON.stringify({
+            "email": email, "amount": amount * 100 
+        })
+        
+        const request = await https.request(options, apiRes => {
+            let data = ''
+            apiRes.on('data', chunk => { data += chunk })
+            apiRes.on('end', () => {
+                return res.status(200).json(data)
+            })
+        }).on('error', err => { return res.status(400).json(err) })
+
+        request.write(params)
+        request.end()    
+
+        // TRANSACTION
+        // set transaction status to paid upon complete payment
+        // maybe in the confirmPayment controller instead
+
 
     } catch (error) {
+        console.log(error)
         res.status(500).json({
-            message: "Error Processing Payment",
+            error: "Error Processing Payment",
             info: error.message
         })
     }
+}
+
+exports.verifyPayment = async (req, res) => {
+    //
 }
 
 exports.getInvoice = async (req, res) => {
@@ -205,12 +271,14 @@ exports.getInvoice = async (req, res) => {
 
 exports.fetchInvoice = async (req, res) => {
     try {
-        // const invoices = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" })
+        // const invoices = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" }).populate('items')
+        // const user = await User.findById("655e652c5eb5ec11f2cce543")
         const invoices = await Invoice.find({ user: req.userId })
+        const user = await User.findById(req.userId)
         notInDB(invoices, 'No Invoice Found')
     
         res.status(200).json({
-            message: "Successfully Fetched All Invoice",
+            message: `Successfully Fetched All Invoice For ${user.fullname}`,
             data: invoices
         })
     } catch (error) {
@@ -225,8 +293,10 @@ exports.fetchInvoice = async (req, res) => {
 
 // -- ITEMS --
 exports.addItem = async (req, res) => {
+    validateFunc(req)
     const { invoiceId } = req.params
     const { name, price, qty } = req.body
+    
     try {
         const invoice = await Invoice.findById(invoiceId)
         notInDB(invoice, "Invoice Not Found")
@@ -234,11 +304,15 @@ exports.addItem = async (req, res) => {
         const item = new Item({ name, price, qty, invoice })
         await item.save()
 
-        // add total amount on invoice
+        // add total amount to invoice
         invoice.items.push(item)
         invoice.totalAmount += (qty * price)
 
+        
         const updatedInvoice = await invoice.save()
+        // add this amount to transaction too
+        Transaction.find({})
+
         res.status(201).json({
             message: 'Successfully Added Item to Invoie',
             data: updatedInvoice
@@ -315,11 +389,14 @@ exports.getTransaction = async (req, res) => {
 
 exports.fetchTransactions = async (req, res) => {
     try {
-        const transaction = await Transaction.find({ user: req.userId})
+        const transaction = await Transaction.find({ user: "655e652c5eb5ec11f2cce543" })
+        const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const transaction = await Transaction.find({ user: req.userId})
+        // const user = await User.findById(req.userId)
         notInDB(transaction, 'Transactions Not Found',)
     
         res.status(200).json({
-            message: "Successfully Fetched All Transactions",
+            message: `Successfully Fetched All Transactions For ${user.fullname}`,
             data: transaction
         })
     } catch (error) {

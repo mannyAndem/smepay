@@ -17,7 +17,6 @@ exports.acceptPayment = async (req, res) => {
             headers: {
                 Authorization: `Bearer ${paystack_secret_key}`,
                 'Content-Type': 'application/json',
-                // 'cache-control': 'no-cache'
             }
         }
         const request = https.request(options, apiRes => {
@@ -48,15 +47,13 @@ exports.verifyPayment = async (req, res) => {
     const { reference } = req.query
     try {
         const options = {
-            hostname: 'https://api.paystack.co',
+            hostname: 'api.paystack.co',
             port: 5000,
             path: `/transaction/verify/${encodeURIComponent(reference)}`,
             method: 'GET',
             headers: { 
                 Authorization: paystack_public_key,
-                // Authorization: live_public_key,
-                'content-type': 'application/json',
-                'cache-control': 'no-cache' 
+                'Content-type': 'application/json',
             }
         }
 
@@ -68,6 +65,7 @@ exports.verifyPayment = async (req, res) => {
         }
 
         const value = request.data
+        // bring switch statments here
         return res.statsu(200).json(value)
 
     } catch (err) {

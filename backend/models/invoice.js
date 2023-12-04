@@ -31,20 +31,21 @@ const invoiceSchema = new Schema(
             type: String, 
             default: 'pending'
         },
-        items: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Item'
-            }
-        ],
         user: {
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: true
         },
         totalAmount: {
-            type: Number
-        }
+            type: Number,
+            default: 0
+        },
+        items: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Item'
+            }
+        ]
     },
     { 
         timestamps: true 

@@ -17,7 +17,8 @@ const itemSchema = new Schema(
         },
         invoice: {
             type: Schema.Types.ObjectId,
-            ref: 'Invoice'
+            ref: 'Invoice',
+            required: true
         }
     },
     { 
