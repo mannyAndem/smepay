@@ -30,6 +30,8 @@ userCtrl.signup);
 
 router.post('/smepay/login', userCtrl.login);
 
+router.post('/smepay/refresh', userCtrl.refreshToken);
+
 
 
 // GOOGLE LOGIN

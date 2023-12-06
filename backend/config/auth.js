@@ -18,6 +18,7 @@ module.exports = async (req, res, next) => {
         // decoding token which is an encryption of studentemail, studentid
         // and json_secret, and verifying this with the json_secret
     } catch (error) {
+        // const error = new Error("")
         error.statusCode = 500
         throw error
     }
@@ -29,5 +30,7 @@ module.exports = async (req, res, next) => {
         throw error
     }
     req.userId = decodedtoken.userId
+    // hence I can always access the id of the currently logged in
+    // user via req.userId anytime a request is sent
     next() //to reach the next middleware (controller)
 }

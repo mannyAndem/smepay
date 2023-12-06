@@ -7,6 +7,7 @@ module.exports = {
     google_client_secret: process.env.google_client_secret,
     redirect_url: process.env.redirect_url,
     json_secret: process.env.json_secret,
+    json_refresh_secret: process.env.json_refresh_secret,
     paystack_public_key: process.env.paystack_public_key,
     paystack_secret_key: process.env.paystack_secret_key,
     cloudinary_api_key: process.env.cloudinary_api_key,

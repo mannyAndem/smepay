@@ -5,7 +5,7 @@ const passport = require('passport')
 
 
 const User = require('../models/user')
-const { json_secret } = require('../config/secret_keys')
+const { json_secret, json_refresh_secret } = require('../config/secret_keys')
 
 
 const userDetailsFunc = (userParam, errMsg) => {
@@ -82,6 +82,7 @@ exports.signup = async (req, res) => {
 }
 
 
+// add json_refresh_secret to render env variables
 exports.login = async (req, res, next) => {
     const { email, password } = req.body
 
@@ -94,12 +95,37 @@ exports.login = async (req, res, next) => {
 
         const token = jwt.sign(
             {email: oldUser.email, userId: oldUser._id.toString()},
+            json_secret, {expiresIn: '.5h'}) // signed in for 30 mins
+        const refreshToken = jwt.sign(
+            {email: oldUser.email, userId: oldUser._id.toString()},
             json_secret, {expiresIn: '.25h'}) // signed in for 15 mins
-        res.status(200).json({token: token, userId: oldUser._id.toString()})
+            
+        res.status(200).json({
+            token, refreshToken, userId: oldUser._id.toString()
+        })
 
     } catch (error) {
         res.status(500).json({
             message: "Error Login in",
+            info: error.message
+        })
+    }
+}
+
+exports.refreshToken = async (req, res) => {
+    //
+    const { email, refreshToken } = req.body;
+
+    try {
+
+        res.status(200).json({
+            message: "Successfully Authenticated",
+            data: "tokenHere"
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            message: "Error Validating Token",
             info: error.message
         })
     }

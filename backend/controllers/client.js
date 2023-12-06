@@ -129,8 +129,8 @@ exports.createInvoice = async (req, res) => {
         dueDate, billFrom, billTo } = req.body
 
     try {
-        const user = await User.findById("655e652c5eb5ec11f2cce543")
-        // const user = await User.findById(req.userId)
+        // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
         
         const invoice = new Invoice({
@@ -166,8 +166,8 @@ exports.createInvoice = async (req, res) => {
             const transaction = new Transaction({
                 name: user.fullname, email: user.email, 
                 outstanding: invoice.totalAmount, 
-                // user: req.userId
-                user: "655e652c5eb5ec11f2cce543"
+                user: req.userId
+                // user: "655e652c5eb5ec11f2cce543"
             })
     
             transaction.details.push(invoice)
@@ -299,6 +299,8 @@ exports.addItem = async (req, res) => {
     
     try {
         const invoice = await Invoice.findById(invoiceId)
+        return invoice
+        // return invoice
         notInDB(invoice, "Invoice Not Found")
         
         const item = new Item({ name, price, qty, invoice })
@@ -389,10 +391,10 @@ exports.getTransaction = async (req, res) => {
 
 exports.fetchTransactions = async (req, res) => {
     try {
-        const transaction = await Transaction.find({ user: "655e652c5eb5ec11f2cce543" })
-        const user = await User.findById("655e652c5eb5ec11f2cce543")
-        // const transaction = await Transaction.find({ user: req.userId})
-        // const user = await User.findById(req.userId)
+        // const transaction = await Transaction.find({ user: "655e652c5eb5ec11f2cce543" })
+        // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        const transaction = await Transaction.find({ user: req.userId})
+        const user = await User.findById(req.userId)
         notInDB(transaction, 'Transactions Not Found',)
     
         res.status(200).json({
