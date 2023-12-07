@@ -52,6 +52,7 @@ export const login = createAsyncThunk("auth/login", async (data) => {
     return Promise.reject(err);
   }
 });
+
 const initialState = {
   currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,
   loginStatus: "idle", // can be in idle || pending || success || error
@@ -70,6 +71,10 @@ const authSlice = createSlice({
     },
     resetLoginStatus(state) {
       state.loginStatus = "idle";
+    },
+    logOut(state) {
+      localStorage.removeItem("currentUser");
+      state.currentUser = null;
     },
   },
 
@@ -98,7 +103,8 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
-export const { resetSignupStatus, resetLoginStatus } = authSlice.actions;
+export const { resetSignupStatus, resetLoginStatus, logOut } =
+  authSlice.actions;
 export const selectCurrentUser = (state) => state.auth.currentUser;
 export const selectLoginStatus = (state) => state.auth.loginStatus;
 export const selectSignupStatus = (state) => state.auth.signupStatus;

@@ -51,7 +51,7 @@ const Statistics = () => {
   ];
 
   return (
-    <div className="grid grid-cols-3 grid-rows-2 gap-10">
+    <div className="grid grid-cols-1 grid-rows-2 gap-10 lg:grid-cols-3">
       {status === "pending" && (
         <span className="text-center font-semibold">Loading...</span>
       )}
@@ -62,12 +62,12 @@ const Statistics = () => {
       )}
       {status != "pending" &&
         status != "error" &&
-        statistics.map((statistic) => (
-          <div className="col-span-1 row-span-1 h-full">
+        statistics.map((statistic, index) => (
+          <div className="col-span-1 row-span-1 h-full" key={index}>
             <StatisticCard statistic={statistic} />
           </div>
         ))}
-      <div className="row-start-1 col-start-3 col-span-1 row-span-2">
+      <div className="lg:row-start-1 lg:col-start-3 col-span-1 row-span-2">
         <InvoiceStatsCard />
       </div>
     </div>

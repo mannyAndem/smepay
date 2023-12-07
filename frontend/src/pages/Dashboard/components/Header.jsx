@@ -26,9 +26,11 @@ const Header = () => {
       <div className="flex items-center justify-start gap-6">
         <CiBellOn size={32} />
         <div className="h-16 w-16 rounded-full bg-gray flex justify-center items-center  text-2xl font-semibold text-blue">
-          {currentUser.fullname.charAt(0)}
+          {currentUser.fullname.charAt(0).toUpperCase()}
         </div>
-        <span className="text-xl font-semibold">{currentUser.fullname}</span>
+        <span className="text-xl font-semibold">
+          {currentUser.fullname.toUpperCase()}
+        </span>
       </div>
     </header>
   );

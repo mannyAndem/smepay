@@ -7,20 +7,6 @@ import ProtectedRoute from "./features/authentication/ProtectedRoute";
 import Landing from "./pages/Landing/Landing";
 
 function App() {
-  // Preventing users from accessing site in mobile.
-  const minimumWidth = 768;
-
-  if (window.innerWidth < minimumWidth) {
-    return (
-      <div className="flex justify-center items-center bg-gray h-screen">
-        <h1 className="text-center text-2xl text-dark">
-          Welcome to <span className="text-blue font-semibold">SMEPAY</span>
-          <br /> Please open this site in a desktop.
-        </h1>
-      </div>
-    );
-  }
-
   return (
     <Routes>
       <Route path="/" element={<Landing />} />

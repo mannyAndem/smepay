@@ -4,13 +4,18 @@ import { MdGroup, MdOutlineDashboard } from "react-icons/md";
 import { CiBank } from "react-icons/ci";
 import { CiLogout } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
+import { useDispatch } from "react-redux";
+import { logOut } from "../../../features/authentication/authSlice";
+import { useNavigate } from "react-router-dom";
 
+/**
+ * Component is responsible for taking an array of links and rendering in a sidebar.
+ * Links in the sidebar are defined within the component.
+ * To add new or update link, simply add a new link object to the LINKS array with properties, name, to and icon.
+ */
 const Sidebar = () => {
-  /**
-   * Component is responsible for taking an array of links and rendering in a sidebar.
-   * Links in the sidebar are defined within the component.
-   * To add new or update link, simply add a new link object to the LINKS array with properties, name, to and icon.
-   */
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const LINKS = [
     {
@@ -34,6 +39,13 @@ const Sidebar = () => {
       icon: <IoSettingsOutline size={24} color="#001F3F" />,
     },
   ];
+
+  // function to handle sign out
+  const handleLogOut = () => {
+    dispatch(logOut());
+    navigate("/");
+  };
+
   return (
     <div className="py-5">
       <span className="font-semibold text-3xl m-5">SMEPAY</span>
@@ -41,12 +53,15 @@ const Sidebar = () => {
         {LINKS.map((link) => (
           <SidebarIcon link={link} />
         ))}
-        <div className="w-full flex items-center gap-4 py-6 px-6 cursor-pointer">
+        <button
+          className="w-full flex items-center gap-4 py-6 px-6 cursor-pointer"
+          onClick={handleLogOut}
+        >
           <div className="p-1 bg-darkGray rounded-sm shadow-sm">
             <CiLogout size={24} color="#001F3F" />
           </div>
           <span className="capitalize text-lg">Logout</span>
-        </div>
+        </button>
       </div>
     </div>
   );

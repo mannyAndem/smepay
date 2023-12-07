@@ -1,9 +1,12 @@
 import { selectTransactions } from "./transactionsSlice";
 import { useSelector } from "react-redux";
+import projectsIcon from "../../assets/eos-icons_project-outlined.png";
+import paidIcon from "../../assets/icon-paid.png";
+import clientsIcon from "../../assets/clients-icon.png";
+import invoiceIcon from "../../assets/invoice-icon.png";
 import StatisticCard from "../../pages/Dashboard/components/StatisticCard";
 
-const TransactionsStats = () => {
-  const transactions = useSelector(selectTransactions);
+const TransactionsStats = ({ transactions, status }) => {
   /**
    * Component is responsible for passing the transactions statistics to a statistic card and renedering same rendering out same.
    *
@@ -11,29 +14,39 @@ const TransactionsStats = () => {
    */
   return (
     <div className="flex justify-between gap-8">
-      <StatisticCard
-        statistic={{
-          name: "Total Transactions",
-          amount: transactions.length,
-          isCurrency: false,
-        }}
-      />
-      <StatisticCard
-        statistic={{
-          name: "Total Revenue",
-          amount: transactions.reduce((acc, curr) => acc + curr.amount, 0),
-          isCurrency: false,
-        }}
-      />
-      <StatisticCard
-        statistic={{
-          name: "Total Outstanding Payments",
-          amount: transactions
-            .filter((transaction) => transaction.status !== "Paid")
-            .reduce((acc, curr) => acc + curr.amount, 0),
-          isCurrency: false,
-        }}
-      />
+      {status === "pending" && (
+        <span className="block text-center font-semibold">Loading...</span>
+      )}
+      {status === "error" && (
+        <span className="block text-center font-semibold text-red">
+          An error occurred
+        </span>
+      )}
+      {status === "success" && (
+        <>
+          <StatisticCard
+            statistic={{
+              name: "Total Transactions",
+              amount: transactions?.length,
+              isCurrency: false,
+            }}
+          />
+          <StatisticCard
+            statistic={{
+              name: "Total Revenue",
+              amount: 0,
+              isCurrency: false,
+            }}
+          />
+          <StatisticCard
+            statistic={{
+              name: "Total Outstanding Payments",
+              amount: 0,
+              isCurrency: true,
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };
