@@ -6,11 +6,19 @@ import Transactions from "./components/Transactions";
 import Settings from "./components/Settings";
 import Header from "./components/Header";
 import MobileNavHeader from "./components/MobileNavHeader";
+import MobileSidebar from "./components/MobileSidebar";
+import { useState } from "react";
 
 const Dashboard = () => {
   /**
    * Component is responsible for rendering out entire sidebar page.
    */
+
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleMobileNav = () => {
+    setExpanded((prev) => !prev);
+  };
 
   return (
     <div className="grid grid-cols-1 min-h-screen lg:grid-cols-6">
@@ -22,7 +30,11 @@ const Dashboard = () => {
           <Header />
         </div>
         <div className="block lg:hidden">
-          <MobileNavHeader />
+          <MobileNavHeader
+            toggleMobileNav={toggleMobileNav}
+            expanded={expanded}
+          />
+          <MobileSidebar expanded={expanded} />
         </div>
         <div className="px-5 lg:pr-5 lg:px-0">
           <Routes>

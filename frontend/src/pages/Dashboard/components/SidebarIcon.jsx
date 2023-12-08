@@ -18,7 +18,7 @@ const SidebarIcon = ({ link }) => {
       end
     >
       <div className="p-1 rounded-sm shadow-sm">{link.icon}</div>
-      <span className="capitalize text-lg">
+      <span className="capitalize lg:text-lg">
         {link.name.charAt(0).toUpperCase() + link.name.substring(1)}
       </span>
     </NavLink>
