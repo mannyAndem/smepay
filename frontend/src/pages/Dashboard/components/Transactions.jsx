@@ -15,15 +15,13 @@ const Transactions = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
   const status = useSelector(selectTransactionsStatus);
+
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchTransactions(currentUser.token));
     }
   }, [status, dispatch]);
 
-  if (status === "success") {
-    console.log(transactions);
-  }
   return (
     <div>
       <div className="flex justify-between items-center my-6">

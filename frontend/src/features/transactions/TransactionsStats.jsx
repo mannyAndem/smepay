@@ -1,19 +1,16 @@
-import { selectTransactions } from "./transactionsSlice";
-import { useSelector } from "react-redux";
 import projectsIcon from "../../assets/eos-icons_project-outlined.png";
 import paidIcon from "../../assets/icon-paid.png";
-import clientsIcon from "../../assets/clients-icon.png";
-import invoiceIcon from "../../assets/invoice-icon.png";
+import revenueIcon from "../../assets/revenue-icon.png";
 import StatisticCard from "../../pages/Dashboard/components/StatisticCard";
 
+/**
+ * Component is responsible for passing the transactions statistics to a statistic card and renedering same rendering out same.
+ *
+ * The statistic card component is used is loacted in the /src/pages/dashboard/components
+ */
 const TransactionsStats = ({ transactions, status }) => {
-  /**
-   * Component is responsible for passing the transactions statistics to a statistic card and renedering same rendering out same.
-   *
-   * The statistic card component is used is loacted in the /src/pages/dashboard/components
-   */
   return (
-    <div className="flex justify-between gap-8">
+    <div className="flex flex-col justify-between gap-8 lg:flex-row">
       {status === "pending" && (
         <span className="block text-center font-semibold">Loading...</span>
       )}
@@ -29,6 +26,7 @@ const TransactionsStats = ({ transactions, status }) => {
               name: "Total Transactions",
               amount: transactions?.length,
               isCurrency: false,
+              icon: projectsIcon,
             }}
           />
           <StatisticCard
@@ -36,6 +34,7 @@ const TransactionsStats = ({ transactions, status }) => {
               name: "Total Revenue",
               amount: 0,
               isCurrency: false,
+              icon: revenueIcon,
             }}
           />
           <StatisticCard
@@ -43,6 +42,7 @@ const TransactionsStats = ({ transactions, status }) => {
               name: "Total Outstanding Payments",
               amount: 0,
               isCurrency: true,
+              icon: paidIcon,
             }}
           />
         </>

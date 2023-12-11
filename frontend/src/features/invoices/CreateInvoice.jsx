@@ -32,12 +32,11 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
     description: "",
     issuedDate: new Date(),
     dueDate: new Date(),
-    billFrom: "",
+    billFrom: currentUser.fullname,
     billTo: "",
     additionalNotes: "",
   });
 
-  console.log(formData);
   // state to hold form errors
   const [formErrors, setFormErrors] = useState({});
 
@@ -137,7 +136,6 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
   // Date stuff
   registerLocale("el", el); // register it with the name you want
   const handleDateChange = (name, date) => {
-    console.log(date);
     setFormData((prev) => ({ ...prev, [name]: date }));
   };
 

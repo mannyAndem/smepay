@@ -1,6 +1,5 @@
 import SidebarIcon from "./SidebarIcon";
-import { FaClipboardUser } from "react-icons/fa6";
-import { MdGroup, MdOutlineDashboard } from "react-icons/md";
+import { MdOutlineDashboard, MdOutlineGroup } from "react-icons/md";
 import { CiBank } from "react-icons/ci";
 import { CiLogout } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -26,7 +25,7 @@ const Sidebar = () => {
     {
       name: "clients",
       to: "/dashboard/clients",
-      icon: <MdGroup size={24} color="#001F3F" />,
+      icon: <MdOutlineGroup size={24} color="#001F3F" />,
     },
     {
       name: "transactions",

@@ -33,11 +33,19 @@ const TransactionsTable = ({ transactions, status }) => {
         <thead className="bg-veryDarkBlue text-gray font-semibold">
           <tr>
             <th className="p-2 border-r border-gray">Client Name</th>
-            <th className="p-2 border-x border-gray">Transaction Date</th>
-            <th className="p-2 border-x border-gray">Amount</th>
-            <th className="p-2 border-x border-gray">Payment Method</th>
-            <th className="p-2 border-x border-gray">Status</th>
-            <th className="p-2 border-l border-gray">Details</th>
+            <th className="p-2 border-x border-gray hidden lg:table-cell">
+              Transaction Date
+            </th>
+            <th className="p-2 border-x border-gray hidden lg:table-cell">
+              Amount
+            </th>
+            <th className="p-2 border-x border-gray hidden lg:table-cell">
+              Payment Method
+            </th>
+            <th className="p-2 border-x border-gray hidden lg:table-cell">
+              Status
+            </th>
+            <th className="p-2 border-l border-gray ">Details</th>
           </tr>
         </thead>
         <tbody>
@@ -54,10 +62,18 @@ const TransactionsTable = ({ transactions, status }) => {
               return (
                 <tr key={transaction.id}>
                   <td className="p-2">{transaction.clientName}</td>
-                  <td className="p-2">{transaction.date}</td>
-                  <td className="p-2">{transaction.amount}</td>
-                  <td className="p-2">{transaction.paymentMethod}</td>
-                  <td className="p-2">{transaction.status}</td>
+                  <td className="p-2 hidden lg:table-cell">
+                    {transaction.date}
+                  </td>
+                  <td className="p-2 hidden lg:table-cell">
+                    {transaction.amount}
+                  </td>
+                  <td className="p-2 hidden lg:table-cell">
+                    {transaction.paymentMethod}
+                  </td>
+                  <td className="p-2 hidden lg:table-cell">
+                    {transaction.status}
+                  </td>
                   <td className="p-2">
                     <div className="flex items-center gap-4 justify-center">
                       <button className="py-2 px-4 w-1/2 bg-blue rounded-2xl text-white text-sm">
