@@ -48,7 +48,8 @@ router.post('/invoice/create', [
         .withMessage('billFrom cannot be empty'),
     body('billTo').not().isEmpty()
         .withMessage('billTo cannot be empty'),
-], authMid, clientCtrl.createInvoice);
+], clientCtrl.createInvoice);
+// ], authMid, clientCtrl.createInvoice);
 
 router.post('/paystack/initiate/:transactionId', authMid, clientCtrl.initiatePayment);
 
@@ -56,7 +57,6 @@ router.post('/paystack/verify', authMid, clientCtrl.verifyPayment);
 
 
 router.get('/invoice/:invoiceId', authMid, clientCtrl.getInvoice);
-// router.get('/invoice/:invoiceId', clientCtrl.getInvoice);
 
 router.get('/invoice', authMid, clientCtrl.fetchInvoice);
 
@@ -83,7 +83,6 @@ router.get('/items/:invoiceId', authMid, clientCtrl.fetchItems);
 router.get('/transaction/:transactionId', authMid, clientCtrl.getTransaction);
 
 router.get('/transactions', authMid, clientCtrl.fetchTransactions);
-// router.get('/transactions', clientCtrl.fetchTransactions);
 
 
 
