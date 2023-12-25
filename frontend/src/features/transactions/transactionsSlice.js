@@ -1,23 +1,26 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "../../api/axios";
 
 export const fetchTransactions = createAsyncThunk(
   "transactions/fetch",
-  async () => {
-    // const response = axios.get("")
+  async (token) => {
+    try {
+      const response = await axios.get("/transactions", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data);
+      return response.data.data;
+    } catch (err) {
+      console.error(err);
+      return Promise.reject(err);
+    }
   }
 );
 
 const initialState = {
-  data: [
-    {
-      id: 1,
-      clientName: "ABC Corp",
-      date: "December 21, 2023",
-      amount: 2000,
-      paymentMethod: "Transfer",
-      status: "Paid",
-    },
-  ],
+  data: null,
   status: "idle",
 };
 
@@ -30,11 +33,11 @@ const transactionsSlice = createSlice({
       state.status = "pending";
     });
     builder.addCase(fetchTransactions.fulfilled, (state, action) => {
-      state.status = "pending";
+      state.status = "success";
       state.data = action.payload;
     });
     builder.addCase(fetchTransactions.rejected, (state, action) => {
-      state.status = "pending";
+      state.status = "error";
     });
   },
 });

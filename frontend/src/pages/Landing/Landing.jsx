@@ -17,21 +17,24 @@ import johnImg from "../../assets/John.png";
 import gloryImg from "../../assets/Glory.png";
 import aliceImg from "../../assets/Alice.png";
 import macbookMockup from "../../assets/macbook-mockup.png";
+import macbookMockupMobile from "../../assets/macbook-mockup-mobile.png";
 
 const Landing = () => {
   return (
-    <div className="bg-gray">
+    <div className="w-screen overflow-x-hidden bg-gray">
       <Navbar />
       <main>
-        <section className="flex flex-col items-center gap-8 py-24 px-36">
-          <h1 className="text-[3.5rem] text-paleDark font-semibold text-center">
-            Effortless Payment
-            <br /> Management for small businesses
+        <section className="px-5 flex flex-col items-center gap-8 py-24 lg:px-36">
+          <h1 className="text-2xl  text-paleDark font-semibold text-center lg:text-6xl">
+            Effortless Payment Management for small businesses
           </h1>
-          <p className="text-dark text-2xl text-center">
+          <p className="text-dark text-center lg:text-2xl">
             Streamline your invoicing and payment tracking with our intuitive
             app
           </p>
+          <Link to="/signup" className="py-4 px-5 bg-blue text-gray rounded-md">
+            GET STARTED
+          </Link>
           <div>
             <img
               src={heroImg}
@@ -40,68 +43,68 @@ const Landing = () => {
             />
           </div>
         </section>
-        <section className="px-24 py-16">
-          <h2 className="text-center text-xl">Features</h2>
-          <span className="block text-center text-3xl">
+        <section className="px-5 py-16 lg:px-24">
+          <h2 className="text-sm text-center lg:text-xl">Features</h2>
+          <span className="block text-center lg:text-3xl">
             What can you expect?
           </span>
-          <div className="mt-12 grid grid-cols-3 gap-8 ">
+          <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className=" col-span-1 bg-white flex flex-col px-8 pt-4 pb-10 rounded-sm shadow-sm items-center text-center">
               <img src={featuresInvoices} className="mb-8" />/
-              <h3 className="text-2xl font-semibold mb-4">
+              <h3 className="text-sm font-semibold mb-4 lg:text-2xl">
                 Professional Invoices
               </h3>
-              <p className="text-xl">
+              <p className="text-xs lg:text-xl">
                 Create polished and professional invoices that reflect the
                 quality of your services, enhancing your business image.
               </p>
             </div>
             <div className=" col-span-1 bg-white flex flex-col px-8 pt-4 pb-10 rounded-sm shadow-sm items-center text-center">
               <img src={featuresSecure} className="mb-8" />/
-              <h3 className="text-2xl font-semibold mb-4">
+              <h3 className="text-sm font-semibold mb-4 lg:text-2xl">
                 Secure and reliable
               </h3>
-              <p className="text-xl">
+              <p className="text-xs lg:text-xl">
                 Rest easy with our secure and reliable platform, ensuring the
                 safety of your financial data and transactions.
               </p>
             </div>
-            <div className=" col-span-1 bg-white flex flex-col px-8 pt-4 pb-10 rounded-sm shadow-sm items-center text-center">
+            <div className="col-span-1 bg-white flex flex-col px-8 pt-4 pb-10 rounded-sm shadow-sm items-center text-center">
               <img src={featuresAlert} className="mb-8" />/
-              <h3 className="text-2xl font-semibold mb-4">
+              <h3 className="text-sm font-semibold mb-4 lg:text-2xl">
                 Alert for unpaid invoices
               </h3>
-              <p className="text-xl">
+              <p className="text-xs lg:text-xl">
                 Receive instant alerts for unpaid invoices, ensuring a healthy
                 cash flow for your business.
               </p>
             </div>
             <div className=" col-span-1 bg-white flex flex-col px-8 pt-4 pb-10 rounded-sm shadow-sm items-center text-center">
               <img src={featuresTracking} className="mb-8" />/
-              <h3 className="text-2xl font-semibold mb-4">
+              <h3 className="text-sm font-semibold mb-4 lg:text-2xl">
                 Real-time payment tracking
               </h3>
-              <p className="text-xl">
+              <p className="text-xs lg:text-xl">
                 Stay in the loop with real-time payment tracking, empowering you
                 to make informed decisions for your business.
               </p>
             </div>
             <div className=" col-span-1 bg-white flex flex-col px-8 pt-4 pb-10 rounded-sm shadow-sm items-center text-center">
               <img src={featuresEfficiency} className="mb-8" />/
-              <h3 className="text-2xl font-semibold mb-4">
+              <h3 className="text-sm font-semibold mb-4 lg:text-2xl">
                 Efficiency and time savings
               </h3>
-              <p className="text-xl">
+              <p className="text-xs lg:text-xl">
                 Streamline your payment processes and save valuable time with
                 our efficient and user-friendly platform.
               </p>
             </div>
             <div className=" col-span-1 bg-white flex flex-col px-8 pt-4 pb-10 rounded-sm shadow-sm items-center text-center">
               <img src={featuresUser} className="mb-8" />/
-              <h3 className="text-2xl font-semibold mb-4">
+              <h3 className="text-sm font-semibold mb-4 lg:text-2xl">
                 User friendly interface
               </h3>
-              <p className="text-xl">
+              <p className="text-xs lg:text-xl">
                 Experience a seamless and intuitive interface that requires
                 minimal learning, allowing you to focus on what matter most-
                 your business.
@@ -109,32 +112,32 @@ const Landing = () => {
             </div>
           </div>
         </section>
-        <section className="px-32 py-16">
-          <h2 className="flex items-center gap-2 text-xl">
+        <section className="px-5 py-16 lg:px-32">
+          <h2 className="hidden items-center gap-2 text-xl lg:flex">
             How we work <img src={arrow} />
           </h2>
-          <span className="mt-4 block text-center text-3xl">
+          <span className="mt-4 block text-center lg:text-3xl">
             Want to enjoy these benefits?
           </span>
-          <div className="mt-20 flex justify-between gap-16 items-end">
+          <div className="mt-20 flex-col flex justify-between gap-16 lg:items-end lg:flex-row">
             <div className="w-full flex flex-col items-start">
               <div className="flex items-center gap-8">
                 <div className="w-6 h-6 rounded-full bg-blue"></div>
-                <span className="text-2xl whitespace-nowrap">
+                <span className="text-sm whitespace-nowrap lg:text-2xl">
                   Sign up for free
                 </span>
               </div>
-              <div className="my-4 ml-2 border-l-4 border-dotted border-blue w-full h-[200px]"></div>
+              <div className="my-4 ml-2 border-l-4 border-dotted border-blue w-full h-24 lg:h-[200px]"></div>
               <div className="flex items-center gap-8">
                 <div className="w-6 h-6 rounded-full bg-blue"></div>
-                <span className="text-2xl whitespace-nowrap">
+                <span className="text-sm whitespace-nowrap lg:text-2xl">
                   Create your first Invoice
                 </span>
               </div>
-              <div className="my-4 ml-2 border-l-4 border-dotted border-blue w-full h-[200px]"></div>
+              <div className="my-4 ml-2 border-l-4 border-dotted border-blue w-full h-24 lg:h-[200px]"></div>
               <div className="flex items-center gap-8">
                 <div className="w-6 h-6 rounded-full bg-blue"></div>
-                <span className="text-2xl whitespace-nowrap">
+                <span className="text-sm whitespace-nowrap lg:text-2xl">
                   Effortlessly manage payment
                 </span>
               </div>
@@ -144,12 +147,12 @@ const Landing = () => {
             </div>
           </div>
         </section>
-        <section className="px-32 py-16">
-          <h2 className="text-center text-3xl mb-4">Testimonials</h2>
-          <span className="text-center block">
+        <section className="px-5 py-16 lg:px-32">
+          <h2 className="text-center lg:text-3xl mb-4">Testimonials</h2>
+          <span className="text-sm text-center block lg:text-base">
             See what our clients are saying
           </span>
-          <div className="mt-20 grid grid-cols-3 gap-8 ">
+          <div className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="bg-white rounded-md shadow-sm pb-6 overflow-hidden">
               <div className="w-full">
                 <img
@@ -159,12 +162,12 @@ const Landing = () => {
                 />
               </div>
               <div className="px-6 text-center mt-8">
-                <p className="text-sm text-[#667085]">
+                <p className="text-xs text-[#667085] lg:text-sm">
                   “Managing payments was a breeze with this app. I could easily
                   create profile for all my clients, keep track of transactions
                   and receive instant alerts for any overdue invoices...
                 </p>
-                <span className="font-semibold block mt-4">
+                <span className="font-semibold block mt-4 text-sm lg:text-base">
                   Alice, owner of Wonderland Bakery
                 </span>
               </div>
@@ -178,12 +181,12 @@ const Landing = () => {
                 />
               </div>
               <div className="px-6 text-center mt-8">
-                <p className="text-sm text-[#667085]">
+                <p className="text-xs text-[#667085] lg:text-sm">
                   “As a small tech company, efficient payment management is
                   crucial. The app has become an indispensable tool for keeping
                   our financial operations smooth and error-free...
                 </p>
-                <span className="font-semibold block mt-4">
+                <span className="font-semibold block mt-4 text-sm lg:text-base">
                   John, CEO of Tech Innovate Solutions
                 </span>
               </div>
@@ -197,24 +200,24 @@ const Landing = () => {
                 />
               </div>
               <div className="px-6 text-center mt-8">
-                <p className="text-sm text-[#667085]">
+                <p className="text-xs text-[#667085] lg:text-sm">
                   “This app transformed the way we handle payments at our flower
                   shop. It’s user-friendly. efficient, and has truly simplified
                   our invoicing process....read more
                 </p>
-                <span className="font-semibold block mt-4">
+                <span className="font-semibold block mt-4 text-sm lg:text-base">
                   Glory, founder of Bloom Florist
                 </span>
               </div>
             </div>
           </div>
         </section>
-        <section className="pt-16  pl-32 flex items-center justify-between gap-16">
-          <div className="flex items-start flex-col gap-4">
-            <h2 className="text-2xl font-semibold">
+        <section className="pt-16  pb-16 px-5 flex flex-col items-center justify-between gap-16 lg:flex-row lg:pb-0 lg:pr-0 lg:pl-32">
+          <div className="flex px-6 items-center flex-col gap-4 lg:px-0 lg:items-start text-center lg:text-left">
+            <h2 className="font-semibold lg:text-2xl">
               Ready to transform your payment management?
             </h2>
-            <p className="text-xl">
+            <p className="text-sm  lg:text-xl">
               Sign up for free and experience the difference
             </p>
             <Link
@@ -225,12 +228,13 @@ const Landing = () => {
             </Link>
           </div>
           <div>
-            <img src={macbookMockup} className="w-full" />
+            <img src={macbookMockup} className="hidden lg:block w-full" />
+            <img src={macbookMockupMobile} className="block w-full lg:hidden" />
           </div>
         </section>
       </main>
-      <footer className="bg-veryDarkBlue px-32 py-12 ">
-        <div className="border-lightGray border-b pb-8  flex justify-between">
+      <footer className="bg-veryDarkBlue px-5 py-12 lg:px-32">
+        <div className="border-lightGray border-b pb-8  flex flex-col gap-16 lg:justify-between lg:flex-row">
           <span className="block text-2xl text-blue">SMEPAY</span>
           <div className="flex gap-32 text-gray font-semibold">
             <ul className="flex flex-col gap-3">

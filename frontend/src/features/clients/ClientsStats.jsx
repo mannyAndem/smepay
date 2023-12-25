@@ -12,7 +12,7 @@ import StatisticCard from "../../pages/Dashboard/components/StatisticCard";
 const ClientStats = () => {
   const clients = useSelector(selectClients);
   return (
-    <div className="flex justify-between gap-8">
+    <div className="flex flex-col justify-between gap-8 lg:flex-row">
       <StatisticCard
         statistic={{
           name: "Total Clients",

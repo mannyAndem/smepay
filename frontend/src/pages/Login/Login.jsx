@@ -1,7 +1,5 @@
 import { Link, useNavigate, useNavigationType } from "react-router-dom";
 import signupImg from "../../assets/signup-img.png";
-import googleIcon from "../../assets/google.svg";
-import facebookIcon from "../../assets/logos_facebook.svg";
 import { useEffect, useRef, useState } from "react";
 import {
   login,
@@ -17,13 +15,6 @@ import toast, { Toaster } from "react-hot-toast";
  *
  */
 
-// api: curl --location 'http://localhost:443/smepay/signup' \
-// --data-raw '{
-//   "fullname": "new user",
-//   "email": "testuser@gmail.com",
-//   "password": "testuserpassword",
-//   "confirmpass": "testuserpassword"
-// }'
 const Login = () => {
   const status = useSelector(selectLoginStatus);
   const currentUser = useSelector(selectCurrentUser);
@@ -88,10 +79,10 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       <Toaster />
-      <div className="min-h-screen w-full">
+      <div className="hidden min-h-screen w-full lg:block">
         <img src={signupImg} className="w-full h-full object-cover" />
       </div>
-      <div className="h-full w-full px-24 py-8">
+      <div className="h-full w-full px-5 py-8 lg:px-24">
         <span className="block text-xl font-semibold text-right">SMEPAY</span>
         <div className="mt-8">
           <h1 className="font-bold text-3xl text-dark">Login</h1>

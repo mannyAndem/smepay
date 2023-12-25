@@ -1,3 +1,4 @@
+import { useState } from "react";
 import SidebarIcon from "./SidebarIcon";
 import { MdOutlineDashboard, MdOutlineGroup } from "react-icons/md";
 import { CiBank } from "react-icons/ci";
@@ -7,12 +8,7 @@ import { useDispatch } from "react-redux";
 import { logOut } from "../../../features/authentication/authSlice";
 import { useNavigate } from "react-router-dom";
 
-/**
- * Component is responsible for taking an array of links and rendering in a sidebar.
- * Links in the sidebar are defined within the component.
- * To add new or update link, simply add a new link object to the LINKS array with properties, name, to and icon.
- */
-const Sidebar = () => {
+const MobileSidebar = ({ expanded }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -39,21 +35,23 @@ const Sidebar = () => {
     },
   ];
 
-  // function to handle sign out
   const handleLogOut = () => {
     dispatch(logOut());
     navigate("/");
   };
 
   return (
-    <div className="py-5">
-      <span className="font-semibold text-3xl m-5">SMEPAY</span>
-      <div className="mt-12 flex flex-col gap-4">
+    <div
+      className={`z-20 ${
+        expanded ? "scale-x-100" : "scale-x-0"
+      } origin-left transition duration-300 ease-out pt-16 px-5 flex flex-col absolute top-0 left-0 h-screen w-[60vw] bg-opacity-70 backdrop-blur-md bg-gray`}
+    >
+      <div className="mt-6 flex flex-col gap-4">
         {LINKS.map((link) => (
           <SidebarIcon link={link} />
         ))}
         <button
-          className="w-full flex items-center gap-4 py-6 px-6 cursor-pointer"
+          className="w-full flex items-center gap-4 py-4 px-4 cursor-pointer"
           onClick={handleLogOut}
         >
           <div className="p-1 bg-darkGray rounded-sm shadow-sm">
@@ -66,4 +64,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default MobileSidebar;

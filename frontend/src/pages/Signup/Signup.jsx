@@ -13,24 +13,10 @@ import toast, { Toaster } from "react-hot-toast";
  * Component is responsible for rendering sign up page
  *
  */
-
-// api: curl --location 'http://localhost:443/smepay/signup' \
-// --data-raw '{
-//   "fullname": "new user",
-//   "email": "testuser@gmail.com",
-//   "password": "testuserpassword",
-//   "confirmpass": "testuserpassword"
-// }'
 const Signup = () => {
   const status = useSelector(selectSignupStatus);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (status === "successs") {
-      navigate("/");
-    }
-  }, [status]);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -119,10 +105,10 @@ const Signup = () => {
   return (
     <div className="min-h-screen flex">
       <Toaster />
-      <div className="min-h-screen w-full">
+      <div className=" hidden min-h-screen w-full lg:block">
         <img src={signupImg} className="w-full h-full object-cover" />
       </div>
-      <div className="h-full w-full px-24 py-8">
+      <div className="h-full w-full px-5 py-8 lg:px-24">
         <span className="block text-xl font-semibold text-right">SMEPAY</span>
         <div className="mt-8">
           <h1 className="font-bold text-3xl text-dark">Create new account</h1>
@@ -138,9 +124,17 @@ const Signup = () => {
             onSubmit={(e) => handleSubmit(e)}
           >
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold">Enter full name</label>
-              <div className="flex gap-7 items-center ">
+              <label className="hidden text-xs font-bold lg:block">
+                Enter full name
+              </label>
+              <div className="flex flex-col gap-7 lg:items-center lg:flex-row">
                 <div className="w-full flex flex-col gap-2">
+                  <label
+                    htmlFor="firstName"
+                    className="lg:hidden text-xs font-bold"
+                  >
+                    First Name
+                  </label>
                   <input
                     type="text"
                     autoComplete="off"
@@ -158,6 +152,12 @@ const Signup = () => {
                   )}
                 </div>
                 <div className="w-full flex flex-col gap-2">
+                  <label
+                    htmlFor="lastName"
+                    className="lg:hidden text-xs font-bold"
+                  >
+                    Last Name
+                  </label>
                   <input
                     type="text"
                     autoComplete="off"

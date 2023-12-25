@@ -41,8 +41,12 @@ const ClientsTable = () => {
         <thead className="bg-veryDarkBlue text-gray font-semibold">
           <tr>
             <th className="p-2 border-r border-gray">Name</th>
-            <th className="p-2 border-x border-gray">Email Address</th>
-            <th className="p-2 border-x border-gray">Total Outstanding</th>
+            <th className="p-2 border-x border-gray hidden lg:table-cell">
+              Email Address
+            </th>
+            <th className="p-2 border-x border-gray hidden lg:table-cell">
+              Total Outstanding
+            </th>
             <th className="p-2 border-l border-gray">Details</th>
           </tr>
         </thead>
@@ -52,8 +56,8 @@ const ClientsTable = () => {
               return (
                 <tr key={client.id}>
                   <td className="p-2">{client.name}</td>
-                  <td className="p-2">{client.email}</td>
-                  <td className="p-2">
+                  <td className="p-2 hidden lg:table-cell">{client.email}</td>
+                  <td className="p-2 hidden lg:table-cell">
                     {client.totalOutstanding.toLocaleString()}
                   </td>
                   <td className="p-2">

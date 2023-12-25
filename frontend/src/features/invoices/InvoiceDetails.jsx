@@ -1,4 +1,36 @@
+import { useEffect, useState } from "react";
+import axios from "../../api/axios";
+import { useNavigate, useParams } from "react-router-dom";
+
+/**
+ * fetches the details of a single invoice and displays same
+ *
+ */
 const InvoiceDetails = () => {
+  const [invoice, setInvoice] = useState(null);
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    const getInvoice = async () => {
+      try {
+        console.log("fetching...", id);
+        const response = await axios.get(`/invoice/${id}`, {
+          timeout: 10000,
+        });
+        console.log(response);
+        setInvoice(response.data.data);
+      } catch (err) {
+        console.error(err);
+        setError("Something went wrong, try reloading the page.");
+      }
+    };
+
+    getInvoice();
+  }, []);
+
   return (
     <div className="w-full">
       <div className="py-4 px-8 border-b border-lightGray text-xl font-semibold">
@@ -22,7 +54,7 @@ const InvoiceDetails = () => {
           <span>December 20, 2023</span>
         </div>
         <div className="flex gap-2 items-center">
-          <span className="font-semibold">Payment Status</span>
+          <span className="font-semibold">Payment Status:</span>
           <span>Pending</span>
         </div>
       </div>
@@ -42,6 +74,7 @@ const InvoiceDetails = () => {
           <button
             className="p-2 rounded-md border border-blue text-blue"
             type="button"
+            onClick={() => navigate(-1)}
           >
             Cancel
           </button>

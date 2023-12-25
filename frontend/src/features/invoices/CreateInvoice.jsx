@@ -2,6 +2,10 @@ import { useState } from "react";
 import { FaPaperclip, FaPlus } from "react-icons/fa6";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+import DatePicker, { registerLocale } from "react-datepicker";
+import el from "date-fns/locale/el"; // the locale you want
+
+import "react-datepicker/dist/react-datepicker.css";
 import {
   createInvoice,
   resetCreateInvoiceStatus,
@@ -22,14 +26,13 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
   const currentUser = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
 
-  console.log(currentUser.token);
   // State to hold form data
   const [formData, setFormData] = useState({
     recipientEmail: "",
     description: "",
-    issuedDate: "",
-    dueDate: "",
-    billFrom: "",
+    issuedDate: new Date(),
+    dueDate: new Date(),
+    billFrom: currentUser.fullname,
     billTo: "",
     additionalNotes: "",
   });
@@ -95,7 +98,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
       price: 0,
       qty: 0,
       get total() {
-        return this.price * this.quantity ?? 0;
+        return this.price * this.qty;
       },
     },
   ]);
@@ -107,7 +110,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
       price: 0,
       qty: 0,
       get total() {
-        return this.price * this.quantity;
+        return this.price * this.qty;
       },
     };
     console.log(itemData);
@@ -130,6 +133,12 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
     );
   };
 
+  // Date stuff
+  registerLocale("el", el); // register it with the name you want
+  const handleDateChange = (name, date) => {
+    setFormData((prev) => ({ ...prev, [name]: date }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -150,9 +159,9 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
   }
 
   return (
-    <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-16 py-2 z-50">
+    <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-5 lg:px-16 py-2 z-50">
       <Toaster />
-      <div className="bg-gray rounded-md shadow-md w-1/2 pb-4 overflow-y-auto">
+      <div className="bg-gray rounded-md shadow-md w-full pb-4 overflow-y-auto lg:w-1/2">
         <div className="flex items-center gap-16  p-6 border-b border-lightGray">
           <button onClick={() => setInvoiceModalVisibilty(false)}>
             <IoCloseCircleOutline size={28} />
@@ -163,7 +172,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
           </h2>
         </div>
         <div className="px-8 py-5 flex items-center justify-between">
-          <div className="flex items-center justify-between gap-4 text-xl">
+          <div className="flex items-center justify-between gap-4 lg:text-xl">
             <span className="font-semibold">Invoice</span>
             <span>#INV-20231120-001</span>
           </div>
@@ -207,18 +216,14 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               </span>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="issuOn">Issued On</label>
-              <input
-                type="text"
-                id="issuedOn"
-                name="issuedDate"
-                value={formData.issuedOn}
-                onChange={(e) => handleFormInputChange(e)}
-                autoComplete="off"
-                placeholder="e.g December 21, 1885"
-                className="border border-lightGray p-2 rounded-md bg-transparent "
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className=" flex flex-col gap-2">
+              <label htmlFor="issuedOn">Issued On</label>
+              <DatePicker
+                selected={formData.issuedDate}
+                onSelect={(date) => handleDateChange("issuedDate", date)}
+                locale="el"
+                className="w-full bg-transparent p-2 border border-lightGray rounded-md "
               />
               {formErrors?.issuedOn && (
                 <span className="text-red font-semibold text-sm">
@@ -228,15 +233,11 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="dueOn">Due On</label>
-              <input
-                type="text"
-                id="dueOn"
-                name="dueDate"
-                placeholder="e.g December 21, 1885"
-                value={formData.dueOn}
-                onChange={(e) => handleFormInputChange(e)}
-                autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent "
+              <DatePicker
+                selected={formData.dueDate}
+                onSelect={(date) => handleDateChange("dueDate", date)}
+                locale="el"
+                className="w-full bg-transparent p-2 border border-lightGray rounded-md "
               />
               {formErrors?.dueOn && (
                 <span className="text-red font-semibold text-sm">
@@ -287,7 +288,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                   <th>Item</th>
                   <th>Price</th>
                   <th>Quantity</th>
-                  <th>Total</th>
+                  <th className="hidden lg:block">Total</th>
                 </thead>
                 <tbody>
                   {invoiceItems &&
@@ -327,7 +328,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                             }
                           />
                         </td>
-                        <td className=" border border-lightGray p-2 rounded-md overflow-hidden">
+                        <td className="hidden border border-lightGray p-2 rounded-md overflow-hidden lg:block">
                           {item.total?.toFixed(2)}
                         </td>
                       </tr>
