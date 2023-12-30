@@ -48,8 +48,7 @@ router.post('/invoice/create', [
         .withMessage('billFrom cannot be empty'),
     body('billTo').not().isEmpty()
         .withMessage('billTo cannot be empty'),
-], clientCtrl.createInvoice);
-// ], authMid, clientCtrl.createInvoice);
+], authMid, clientCtrl.createInvoice);
 
 router.post('/paystack/initiate/:transactionId', authMid, clientCtrl.initiatePayment);
 
@@ -70,8 +69,8 @@ router.post('/item/add/:invoiceId', [
         .withMessage("Price must be numeric"),
     body('qty').isNumeric()
         .withMessage("Quantity must be numeric")
-], clientCtrl.addItem);
-// ], authMid, clientCtrl.addItem);
+], authMid, clientCtrl.addItem);
+// ], clientCtrl.addItem);
 
 router.get('/item/:itemId', authMid, clientCtrl.getItem);
 

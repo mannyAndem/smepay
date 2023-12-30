@@ -130,12 +130,12 @@ exports.createInvoice = async (req, res) => {
         dueDate, billFrom, billTo } = req.body
 
     try {
-        const user = await User.findById("6586285b2f4e76ca62066939")
-        // const user = await User.findById(req.userId)
+        // const user = await User.findById("658f6f6b1c4fe86457b48265")
+        const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
 
-        const invQty = await Invoice.find({ user: "6586285b2f4e76ca62066939" }).countDocuments()
-        // const invQty = await Invoice.find({ user: req.userId }).countDocuments()
+        // const invQty = await Invoice.find({ user: "658f6f6b1c4fe86457b48265" }).countDocuments()
+        const invQty = await Invoice.find({ user: req.userId }).countDocuments()
         
         const year = issuedDate.getFullYear()
         const month = issuedDate.getMonth() + 1
@@ -150,18 +150,18 @@ exports.createInvoice = async (req, res) => {
         await invoice.save()
 
         user.invoices.push(invoice)
-        // await user.save() no need for this code
+        // await user.save() // no need for this code
 
         // -- TRANSACTION --        
-        // first check if this user has any transaction with
+        // first check if this user has any transaction, and with
         // a status of pending, if yes add this invoice to it
         // else, create a new transaction, then add this invoice
         // to it
 
         const existingTrans = await Transaction.findOne({
             $and: [
-                { user: "6586285b2f4e76ca62066939" },
-                // { user: req.userId },
+                // { user: "658f6f6b1c4fe86457b48265" },
+                { user: req.userId },
                 { status: 'pending'}
             ]
         })
@@ -173,25 +173,26 @@ exports.createInvoice = async (req, res) => {
             existingTrans.outstanding += invoice.totalAmount
             await existingTrans.save()
         }
+        
         if(!existingTrans){
             // create new transaction for this user
-            // it'll get a default pending status
+            // it'll get a "default" pending status
             const transaction = new Transaction({
                 name: user.fullname, email: user.email, 
                 outstanding: invoice.totalAmount, 
-                // user: req.userId
-                user: "6586285b2f4e76ca62066939"
+                user: req.userId
+                // user: "658f6f6b1c4fe86457b48265"
             })
-    
+            // return console.log("I got here successfully")
             transaction.invoices.push(invoice)
             await transaction.save()
+            
             user.transactions.push(transaction)
         }
         await user.save()
 
         res.status(201).json({
-            message: "Successfully created invoice and opened/updated transaction",
-            data: invoice
+            message: "Successfully created invoice and opened/updated transaction"
         })
 
     } catch (error) {
@@ -320,8 +321,8 @@ exports.addItem = async (req, res) => {
         const transaction = await Transaction.findOne({
             $and: [
                 { status: 'pending'},
-                // { user: req.userId },
-                { user: "655e652c5eb5ec11f2cce543" },
+                { user: req.userId },
+                // { user: "658f6f6b1c4fe86457b48265" },
             ]
         })
         notInDB(transaction, 'Transaction Not Found')
@@ -339,8 +340,7 @@ exports.addItem = async (req, res) => {
         await transaction.save()
 
         res.status(201).json({
-            message: 'Successfully Added Item to Invoie',
-            data: invoice
+            message: 'Successfully Added Item to Invoice'
         })
     } catch (error) {
         res.status(500).json({
