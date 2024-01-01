@@ -8,6 +8,7 @@ import { FaEllipsis } from "react-icons/fa6";
 import { useEffect } from "react";
 import { selectCurrentUser } from "../authentication/authSlice";
 import { Link } from "react-router-dom";
+import Loader from "../../ui/Loader";
 
 /**
  * Component is responsible for taking the invoices data from the invoices slice and rendering it out in a table.
@@ -20,7 +21,7 @@ const InvoicesTable = () => {
 
   useEffect(() => {
     if (status === "idle") {
-      dispatch(fetchInvoices(currentUser.token));
+      dispatch(fetchInvoices());
     }
   }, [invoices, dispatch]);
 
@@ -36,7 +37,9 @@ const InvoicesTable = () => {
         </div>
       </div>
       {status === "pending" && (
-        <span className="block text-center">Loading...</span>
+        <div className="w-full justify-center items-center">
+          <Loader type="md" />
+        </div>
       )}
       {status === "error" && (
         <span className="block text-center text-red font-semibold">

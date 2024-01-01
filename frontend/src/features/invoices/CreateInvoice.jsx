@@ -148,9 +148,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
 
     let items = invoiceItems.filter((item) => item.name.length > 0);
     console.log(currentUser.token);
-    dispatch(
-      createInvoice({ data: formData, items, token: currentUser.token })
-    );
+    dispatch(createInvoice({ data: formData, items }));
   };
 
   if (status === "error") {

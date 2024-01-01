@@ -7,6 +7,7 @@ import {
 import { FaEllipsis } from "react-icons/fa6";
 import { useEffect } from "react";
 import { selectCurrentUser } from "../authentication/authSlice";
+import Loader from "../../ui/Loader";
 
 const ClientsTable = () => {
   const clients = useSelector(selectClients);
@@ -37,22 +38,30 @@ const ClientsTable = () => {
           </select>
         </div>
       </div>
-      <table className="w-full text-center">
-        <thead className="bg-veryDarkBlue text-gray font-semibold">
-          <tr>
-            <th className="p-2 border-r border-gray">Name</th>
-            <th className="p-2 border-x border-gray hidden lg:table-cell">
-              Email Address
-            </th>
-            <th className="p-2 border-x border-gray hidden lg:table-cell">
-              Total Outstanding
-            </th>
-            <th className="p-2 border-l border-gray">Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {status === "success" &&
-            clients.map((client) => {
+      {status === "idle" ? (
+        <div></div>
+      ) : status === "pending" ? (
+        <div className="w-full flex justify-center items-center">
+          <Loader type="md" />
+        </div>
+      ) : status === "error" ? (
+        <span className="block text center text-red">An error occured</span>
+      ) : (
+        <table className="w-full text-center">
+          <thead className="bg-veryDarkBlue text-gray font-semibold">
+            <tr>
+              <th className="p-2 border-r border-gray">Name</th>
+              <th className="p-2 border-x border-gray hidden lg:table-cell">
+                Email Address
+              </th>
+              <th className="p-2 border-x border-gray hidden lg:table-cell">
+                Total Outstanding
+              </th>
+              <th className="p-2 border-l border-gray">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {clients?.map((client) => {
               return (
                 <tr key={client.id}>
                   <td className="p-2">{client.name}</td>
@@ -89,8 +98,9 @@ const ClientsTable = () => {
                 </tr>
               );
             })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

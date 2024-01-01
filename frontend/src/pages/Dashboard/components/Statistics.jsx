@@ -9,6 +9,7 @@ import {
   selectInvoices,
   selectInvoicesStatus,
 } from "../../../features/invoices/invoicesSlice";
+import Loader from "../../../ui/Loader";
 
 const Statistics = () => {
   /**
@@ -53,7 +54,9 @@ const Statistics = () => {
   return (
     <div className="grid grid-cols-1 grid-rows-2 gap-10 lg:grid-cols-3">
       {status === "pending" && (
-        <span className="text-center font-semibold">Loading...</span>
+        <div className="col-span-3 flex justify-center items-center">
+          <Loader type="md" />
+        </div>
       )}
       {status === "error" && (
         <span className="text-center text-red font-semibold">
