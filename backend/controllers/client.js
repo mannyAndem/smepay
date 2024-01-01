@@ -130,12 +130,12 @@ exports.createInvoice = async (req, res) => {
         dueDate, billFrom, billTo } = req.body
 
     try {
-        const user = await User.findById("6592e5558e799cec74c4a162")
-        // const user = await User.findById(req.userId)
+        // const user = await User.findById("6592e5558e799cec74c4a162")
+        const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
 
-        const invQty = await Invoice.find({ user: "6592e5558e799cec74c4a162" }).countDocuments()
-        // const invQty = await Invoice.find({ user: req.userId }).countDocuments()
+        // const invQty = await Invoice.find({ user: "6592e5558e799cec74c4a162" }).countDocuments()
+        const invQty = await Invoice.find({ user: req.userId }).countDocuments()
         
         const year = issuedDate.getFullYear()
         const month = issuedDate.getMonth() + 1
@@ -162,8 +162,8 @@ exports.createInvoice = async (req, res) => {
 
         const existingTrans = await Transaction.findOne({
             $and: [
-                { user: "6592e5558e799cec74c4a162" },
-                // { user: req.userId },
+                // { user: "6592e5558e799cec74c4a162" },
+                { user: req.userId },
                 { status: 'pending'}
             ]
         })
@@ -182,8 +182,8 @@ exports.createInvoice = async (req, res) => {
             const transaction = new Transaction({
                 name: user.fullname, email: user.email, 
                 outstanding: invoice.totalAmount, 
-                // user: req.userId
-                user: "6592e5558e799cec74c4a162"
+                user: req.userId
+                // user: "6592e5558e799cec74c4a162"
             })
             // return console.log("I got here successfully")
             transaction.invoices.push(invoice)
