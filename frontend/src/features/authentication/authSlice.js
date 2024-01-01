@@ -4,6 +4,7 @@ import axios from "../../api/axios";
 export const signup = createAsyncThunk("auth/signup", async (data) => {
   try {
     const signupResponse = await axios.post("/signup", data);
+    console.log(signupResponse);
 
     // login in with new data
     let loginResponse = await axios.post(
@@ -26,6 +27,7 @@ export const signup = createAsyncThunk("auth/signup", async (data) => {
     console.log(currentUser);
     return currentUser;
   } catch (err) {
+    console.error(err);
     return Promise.reject(err.message);
   }
 });

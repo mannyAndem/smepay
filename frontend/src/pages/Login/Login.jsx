@@ -4,7 +4,7 @@ import loginImg from "../../assets/signup-img.png";
 import LoginForm from "../../features/authentication/LoginForm";
 
 /**
- * Component is responsible for rendering sign up page
+ * Component is responsible for rendering login page
  *
  */
 
@@ -15,7 +15,9 @@ const Login = () => {
         <img src={loginImg} className="w-full h-full object-cover" />
       </div>
       <div className="h-full w-full px-5 py-8 lg:px-24">
-        <span className="block text-xl font-semibold text-right">SMEPAY</span>
+        <Link to="/" className="block text-xl font-semibold text-right">
+          SMEPAY
+        </Link>
         <div className="mt-8">
           <h1 className="font-bold text-3xl text-dark">Login</h1>
           <span className="block mt-2">
