@@ -56,7 +56,6 @@ router.post('/paystack/verify', authMid, clientCtrl.verifyPayment);
 
 
 router.get('/invoice/:invoiceId', authMid, clientCtrl.getInvoice);
-// router.get('/invoice/:invoiceId', clientCtrl.getInvoice);
 
 router.get('/invoice', authMid, clientCtrl.fetchInvoice);
 
@@ -70,8 +69,8 @@ router.post('/item/add/:invoiceId', [
         .withMessage("Price must be numeric"),
     body('qty').isNumeric()
         .withMessage("Quantity must be numeric")
-], clientCtrl.addItem);
-// ], authMid, clientCtrl.addItem);
+], authMid, clientCtrl.addItem);
+// ], clientCtrl.addItem);
 
 router.get('/item/:itemId', authMid, clientCtrl.getItem);
 
@@ -83,7 +82,6 @@ router.get('/items/:invoiceId', authMid, clientCtrl.fetchItems);
 router.get('/transaction/:transactionId', authMid, clientCtrl.getTransaction);
 
 router.get('/transactions', authMid, clientCtrl.fetchTransactions);
-// router.get('/transactions', clientCtrl.fetchTransactions);
 
 
 

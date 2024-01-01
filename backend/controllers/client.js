@@ -54,6 +54,7 @@ exports.addClient = async (req, res, next) => {
 
     try {
         // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        
         const user = await User.findById(req.userId)
         notInDB(user, "User Not Found")
 
@@ -129,54 +130,69 @@ exports.createInvoice = async (req, res) => {
         dueDate, billFrom, billTo } = req.body
 
     try {
-        // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const user = await User.findById("658f6f6b1c4fe86457b48265")
         const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
+
+        // const invQty = await Invoice.find({ user: "658f6f6b1c4fe86457b48265" }).countDocuments()
+        const invQty = await Invoice.find({ user: req.userId }).countDocuments()
         
+        const year = issuedDate.getFullYear()
+        const month = issuedDate.getMonth() + 1
+        const day = issuedDate.getDate()
+
         const invoice = new Invoice({
+            invoiceNo: 'INV-' + day + '/' + month + '/' + year + '-' + (invQty + 1),
             recipientEmail, description, issuedDate, 
             dueDate, billFrom, billTo, user
         })
+
         await invoice.save()
 
         user.invoices.push(invoice)
-        await user.save()
+        // await user.save() // no need for this code
 
         // -- TRANSACTION --        
-        // first check if this user has any transaction with
+        // first check if this user has any transaction, and with
         // a status of pending, if yes add this invoice to it
         // else, create a new transaction, then add this invoice
         // to it
-        const existingTrans = await Transaction.find({
+
+        const existingTrans = await Transaction.findOne({
             $and: [
+                // { user: "658f6f6b1c4fe86457b48265" },
                 { user: req.userId },
                 { status: 'pending'}
             ]
         })
+
         if(existingTrans){
             // push this invoice into this transaction
             // increase its outstanding by the amount on invoice
-            existingTrans.details.push(invoice)
+            existingTrans.invoices.push(invoice)
             existingTrans.outstanding += invoice.totalAmount
             await existingTrans.save()
         }
+        
         if(!existingTrans){
             // create new transaction for this user
-            // gets a default pending status
+            // it'll get a "default" pending status
             const transaction = new Transaction({
                 name: user.fullname, email: user.email, 
                 outstanding: invoice.totalAmount, 
                 user: req.userId
-                // user: "655e652c5eb5ec11f2cce543"
+                // user: "658f6f6b1c4fe86457b48265"
             })
-    
-            transaction.details.push(invoice)
+            // return console.log("I got here successfully")
+            transaction.invoices.push(invoice)
             await transaction.save()
+            
+            user.transactions.push(transaction)
         }
+        await user.save()
 
         res.status(201).json({
-            message: "Successfully created invoice and opened/updated transaction",
-            data: invoice
+            message: "Successfully created invoice and opened/updated transaction"
         })
 
     } catch (error) {
@@ -233,7 +249,7 @@ exports.initiatePayment = async (req, res) => {
         request.end()    
 
         // TRANSACTION
-        // set transaction status to paid upon complete payment
+        // set transaction status to completed upon complete payment
         // maybe in the confirmPayment controller instead
 
 
@@ -271,19 +287,20 @@ exports.getInvoice = async (req, res) => {
 
 exports.fetchInvoice = async (req, res) => {
     try {
-        // const invoices = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" }).populate('items')
+        // const invoices = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" })
         // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        
         const invoices = await Invoice.find({ user: req.userId })
         const user = await User.findById(req.userId)
         notInDB(invoices, 'No Invoice Found')
     
         res.status(200).json({
-            message: `Successfully Fetched All Invoice For ${user.fullname}`,
+            message: `Successfully Fetched All Invoices For ${user.fullname}`,
             data: invoices
         })
     } catch (error) {
         res.status(200).json({
-            message: "Error Fetching All Invoice",
+            message: "Error Fetching All Invoices",
             info: error.message
         })
     }
@@ -299,25 +316,31 @@ exports.addItem = async (req, res) => {
     
     try {
         const invoice = await Invoice.findById(invoiceId)
-        return invoice
-        // return invoice
         notInDB(invoice, "Invoice Not Found")
-        
+
+        const transaction = await Transaction.findOne({
+            $and: [
+                { status: 'pending'},
+                { user: req.userId },
+                // { user: "658f6f6b1c4fe86457b48265" },
+            ]
+        })
+        notInDB(transaction, 'Transaction Not Found')
+
         const item = new Item({ name, price, qty, invoice })
-        await item.save()
-
-        // add total amount to invoice
         invoice.items.push(item)
-        invoice.totalAmount += (qty * price)
-
+        await item.save()
         
-        const updatedInvoice = await invoice.save()
-        // add this amount to transaction too
-        Transaction.find({})
+        // add total amount to invoice
+        invoice.totalAmount += (qty * price)
+        await invoice.save()
+
+        // add this amount to the pending transaction of this user
+        transaction.outstanding += (qty * price)
+        await transaction.save()
 
         res.status(201).json({
-            message: 'Successfully Added Item to Invoie',
-            data: updatedInvoice
+            message: 'Successfully Added Item to Invoice'
         })
     } catch (error) {
         res.status(500).json({
@@ -331,7 +354,6 @@ exports.getItem = async (req, res) => {
     const { itemId } = req.params
 
     try {
-        // const item = await Item.findById(itemId).populate('invoice')
         const item = await Item.findById(itemId)
         notInDB(item, "Couldn't Find Item")
         
@@ -373,7 +395,8 @@ exports.getTransaction = async (req, res) => {
     const { transactionId } = req.params
 
     try {
-        // const transaction = await Transaction.findById(transactionId).populate('invoice')
+        // const transaction = await Transaction.findById(transactionId)
+        
         const transaction = await Transaction.findById(transactionId)
         notInDB(transaction, "Couldn't Find transaction")
         
@@ -393,6 +416,7 @@ exports.fetchTransactions = async (req, res) => {
     try {
         // const transaction = await Transaction.find({ user: "655e652c5eb5ec11f2cce543" })
         // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        
         const transaction = await Transaction.find({ user: req.userId})
         const user = await User.findById(req.userId)
         notInDB(transaction, 'Transactions Not Found',)
@@ -401,6 +425,7 @@ exports.fetchTransactions = async (req, res) => {
             message: `Successfully Fetched All Transactions For ${user.fullname}`,
             data: transaction
         })
+
     } catch (error) {
         res.status(200).json({
             message: "Error Fetching All Transactions",

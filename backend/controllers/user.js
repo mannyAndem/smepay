@@ -71,7 +71,10 @@ exports.signup = async (req, res) => {
         const user = new User({ fullname, email, password: hashpassword})
 
         const newUser = await user.save()
-        res.status(201).json({message: `Successfully Signed up with email: ${newUser.email}`})
+        res.status(201).json({
+            message: `Successfully Signed up with email: ${newUser.email}`,
+            data: newUser
+        })
 
     } catch (error) {
         res.status(500).json({

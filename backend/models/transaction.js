@@ -24,7 +24,7 @@ const transcationSchema = new Schema(
             ref: 'User',
             required: true
         },
-        details: [
+        invoices: [
             {   
                 type: Schema.Types.ObjectId,
                 ref: 'Invoice'

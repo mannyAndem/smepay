@@ -3,6 +3,10 @@ const Schema = mongoose.Schema
 
 const invoiceSchema = new Schema(
     {
+        invoiceNo: {
+            type: String,
+            required: true
+        },
         recipientEmail: {
             type: String,
             required: true
