@@ -49,8 +49,8 @@ const Sidebar = () => {
     <div className="py-5">
       <span className="font-semibold text-3xl m-5">SMEPAY</span>
       <div className="mt-12 flex flex-col gap-4">
-        {LINKS.map((link) => (
-          <SidebarIcon link={link} />
+        {LINKS.map((link, index) => (
+          <SidebarIcon key={index} link={link} />
         ))}
         <button
           className="w-full flex items-center gap-4 py-6 px-6 cursor-pointer"

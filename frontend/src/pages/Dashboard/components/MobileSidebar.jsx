@@ -47,8 +47,8 @@ const MobileSidebar = ({ expanded }) => {
       } origin-left transition duration-300 ease-out pt-16 px-5 flex flex-col absolute top-0 left-0 h-screen w-[60vw] bg-opacity-70 backdrop-blur-md bg-gray`}
     >
       <div className="mt-6 flex flex-col gap-4">
-        {LINKS.map((link) => (
-          <SidebarIcon link={link} />
+        {LINKS.map((link, index) => (
+          <SidebarIcon key={index} link={link} />
         ))}
         <button
           className="w-full flex items-center gap-4 py-4 px-4 cursor-pointer"

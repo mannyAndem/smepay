@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPaperclip, FaPlus } from "react-icons/fa6";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
@@ -151,10 +151,14 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
     dispatch(createInvoice({ data: formData, items }));
   };
 
-  if (status === "error") {
-    toast.error(error);
-    dispatch(resetCreateInvoiceStatus());
-  }
+  useEffect(() => {
+    if (status === "success") {
+      toast.success("Successfully created Invoice");
+    }
+    if (status === "error") {
+      toast.error("Failed to create invoice");
+    }
+  }, [status]);
 
   return (
     <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-5 lg:px-16 py-2 z-50">

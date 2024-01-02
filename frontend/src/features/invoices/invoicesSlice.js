@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 
 export const createInvoice = createAsyncThunk(
   "invoice/create",
-  async ({ data, items }, { getState }) => {
+  async ({ data, items }, { getState, fulfillWithValue }) => {
     const token = getState().auth.currentUser.token;
     console.log(JSON.stringify(data));
     try {
@@ -18,20 +18,21 @@ export const createInvoice = createAsyncThunk(
         }
       );
       console.log(invoiceResponse.data);
-      // await items.forEach(async (item) => {
-      //   await axios.post(
-      //     `/item/add/${invoiceResponse.data.data._id}`,
-      //     JSON.stringify(item, ["name", "price", "qty"]),
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ${token}`,
-      //         "Content-Type": "application/json",
-      //       },
-      //     }
-      //   );
-      // });
+      await items.forEach(async (item) => {
+        const response = await axios.post(
+          `/item/add/${invoiceResponse.data.invoiceId}`,
+          JSON.stringify(item, ["name", "price", "qty"]),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response);
+      });
 
-      return invoiceResponse.data;
+      return fulfillWithValue("Successfully created invoice");
     } catch (err) {
       console.error(err);
       return Promise.reject(err);
@@ -50,6 +51,7 @@ export const fetchInvoices = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response.data);
       return response.data.data;
     } catch (err) {
       return Promise.reject(err);
