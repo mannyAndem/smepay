@@ -130,11 +130,11 @@ exports.createInvoice = async (req, res) => {
         dueDate, billFrom, billTo } = req.body
 
     try {
-        // const user = await User.findById("658f6f6b1c4fe86457b48265")
+        // const user = await User.findById("6592e5558e799cec74c4a162")
         const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
 
-        // const invQty = await Invoice.find({ user: "658f6f6b1c4fe86457b48265" }).countDocuments()
+        // const invQty = await Invoice.find({ user: "6592e5558e799cec74c4a162" }).countDocuments()
         const invQty = await Invoice.find({ user: req.userId }).countDocuments()
         
         const year = issuedDate.getFullYear()
@@ -146,6 +146,8 @@ exports.createInvoice = async (req, res) => {
             recipientEmail, description, issuedDate, 
             dueDate, billFrom, billTo, user
         })
+
+        const invId = invoice._id;
 
         await invoice.save()
 
@@ -160,7 +162,7 @@ exports.createInvoice = async (req, res) => {
 
         const existingTrans = await Transaction.findOne({
             $and: [
-                // { user: "658f6f6b1c4fe86457b48265" },
+                // { user: "6592e5558e799cec74c4a162" },
                 { user: req.userId },
                 { status: 'pending'}
             ]
@@ -181,7 +183,7 @@ exports.createInvoice = async (req, res) => {
                 name: user.fullname, email: user.email, 
                 outstanding: invoice.totalAmount, 
                 user: req.userId
-                // user: "658f6f6b1c4fe86457b48265"
+                // user: "6592e5558e799cec74c4a162"
             })
             // return console.log("I got here successfully")
             transaction.invoices.push(invoice)
@@ -192,7 +194,8 @@ exports.createInvoice = async (req, res) => {
         await user.save()
 
         res.status(201).json({
-            message: "Successfully created invoice and opened/updated transaction"
+            message: "Successfully created invoice and opened/updated transaction",
+            invoiceId: invId
         })
 
     } catch (error) {
