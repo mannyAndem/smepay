@@ -1,24 +1,7 @@
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchClients,
-  selectClients,
-  selectClientsStatus,
-} from "./clientSlice";
 import { FaEllipsis } from "react-icons/fa6";
-import { useEffect } from "react";
-import { selectCurrentUser } from "../authentication/authSlice";
 import Loader from "../../ui/Loader";
 
-const ClientsTable = () => {
-  const clients = useSelector(selectClients);
-  const status = useSelector(selectClientsStatus);
-  const currentUser = useSelector(selectCurrentUser);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchClients(currentUser.token));
-  }, [clients, dispatch]);
-
+const ClientsTable = ({ clients }) => {
   return (
     <div className=" my-16  bg-white rounded-md shadow-md ">
       <div className="flex items-center justify-between  p-6">

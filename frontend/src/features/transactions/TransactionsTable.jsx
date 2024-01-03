@@ -3,7 +3,7 @@ import { FaEllipsis } from "react-icons/fa6";
 /**
  * Component is responsible for taking the transactions data from the transactions slice and rendering it out in a table.
  */
-const TransactionsTable = ({ transactions, status }) => {
+const TransactionsTable = ({ transactions }) => {
   return (
     <div className=" my-16 bg-white rounded-md shadow-md ">
       <div className="flex items-center justify-between  p-6">
@@ -49,60 +49,49 @@ const TransactionsTable = ({ transactions, status }) => {
           </tr>
         </thead>
         <tbody>
-          {status === "pending" && (
-            <span className="block text-center font-semibold">Loading...</span>
-          )}
-          {status === "error" && (
-            <span className="block text-center font-semibold text-red">
-              An error occurred
-            </span>
-          )}
-          {status === "success" &&
-            transactions.map((transaction) => {
-              return (
-                <tr key={transaction.id}>
-                  <td className="p-2">{transaction.clientName}</td>
-                  <td className="p-2 hidden lg:table-cell">
-                    {transaction.date}
-                  </td>
-                  <td className="p-2 hidden lg:table-cell">
-                    {transaction.amount}
-                  </td>
-                  <td className="p-2 hidden lg:table-cell">
-                    {transaction.paymentMethod}
-                  </td>
-                  <td className="p-2 hidden lg:table-cell">
-                    {transaction.status}
-                  </td>
-                  <td className="p-2">
-                    <div className="flex items-center gap-4 justify-center">
-                      <button className="py-2 px-4 w-1/2 bg-blue rounded-2xl text-white text-sm">
-                        View
+          {transactions.map((transaction) => {
+            return (
+              <tr key={transaction.id}>
+                <td className="p-2">{transaction.clientName}</td>
+                <td className="p-2 hidden lg:table-cell">{transaction.date}</td>
+                <td className="p-2 hidden lg:table-cell">
+                  {transaction.amount}
+                </td>
+                <td className="p-2 hidden lg:table-cell">
+                  {transaction.paymentMethod}
+                </td>
+                <td className="p-2 hidden lg:table-cell">
+                  {transaction.status}
+                </td>
+                <td className="p-2">
+                  <div className="flex items-center gap-4 justify-center">
+                    <button className="py-2 px-4 w-1/2 bg-blue rounded-2xl text-white text-sm">
+                      View
+                    </button>
+                    <div className="group relative">
+                      <button>
+                        <FaEllipsis size={20} />
                       </button>
-                      <div className="group relative">
-                        <button>
-                          <FaEllipsis size={20} />
+                      <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
+                        <button className="p-2 flex justify-start items-center">
+                          Edit
                         </button>
-                        <div className="z-10 scale-x-0 origin-right absolute top-1/2 transform -translate-y-1/2 right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out group-hover:scale-x-100 shadow-sm">
-                          <button className="p-2 flex justify-start items-center">
-                            Edit
-                          </button>
-                          <button className="p-2 whitespace-nowrap flex justify-start items-center">
-                            Recent Payment
-                          </button>
-                          <button className="p-2 flex justify-start items-center">
-                            Print
-                          </button>
-                          <button className="p-2 flex justify-start items-center">
-                            Delete
-                          </button>
-                        </div>
+                        <button className="p-2 whitespace-nowrap flex justify-start items-center">
+                          Recent Payment
+                        </button>
+                        <button className="p-2 flex justify-start items-center">
+                          Print
+                        </button>
+                        <button className="p-2 flex justify-start items-center">
+                          Delete
+                        </button>
                       </div>
                     </div>
-                  </td>
-                </tr>
-              );
-            })}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

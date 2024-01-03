@@ -56,7 +56,10 @@ export const login = createAsyncThunk("auth/login", async (data) => {
 });
 
 const initialState = {
-  currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,
+  currentUser: JSON.parse(localStorage.getItem("currentUser")) || {
+    fullname: "John Doe",
+    token: "blablabla",
+  },
   loginStatus: "idle", // can be in idle || pending || success || error
   signupStatus: "idle", // can be in idle || pending || success || error
 };

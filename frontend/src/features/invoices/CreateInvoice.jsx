@@ -154,9 +154,11 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
   useEffect(() => {
     if (status === "success") {
       toast.success("Successfully created Invoice");
+      dispatch(resetCreateInvoiceStatus());
     }
     if (status === "error") {
       toast.error("Failed to create invoice");
+      dispatch(resetCreateInvoiceStatus());
     }
   }, [status]);
 

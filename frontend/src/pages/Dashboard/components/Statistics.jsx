@@ -18,11 +18,7 @@ const Statistics = ({ invoices }) => {
     },
     {
       name: "Paid",
-      amount: invoices?.reduce(
-        (acc, curr) =>
-          acc + curr.items.reduce((acc, curr) => acc + curr.price, 0),
-        0
-      ),
+      amount: 0,
       isCurrency: true,
       icon: paidIcon,
     },

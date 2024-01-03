@@ -42,7 +42,7 @@ export const createInvoice = createAsyncThunk(
 
 export const fetchInvoices = createAsyncThunk(
   "invoices/fetch",
-  async (data, { getState }) => {
+  async (data, { getState, rejectWithValue }) => {
     const token = getState().auth.currentUser.token;
 
     try {
@@ -54,7 +54,13 @@ export const fetchInvoices = createAsyncThunk(
       console.log(response.data);
       return response.data.data;
     } catch (err) {
-      return Promise.reject(err);
+      if (err.code === "ERR_NETWORK") {
+        return rejectWithValue(
+          "Can't connect to the internet, please try again."
+        );
+      }
+
+      return rejectWithValue("Something went wrong.");
     }
   }
 );
@@ -94,9 +100,9 @@ const invoicesSlice = createSlice({
       state.status = "success";
       state.data = action.payload;
     });
-    builder.addCase(fetchInvoices.rejected, (state) => {
+    builder.addCase(fetchInvoices.rejected, (state, action) => {
       state.status = "error";
-      state.error = "Error while fetching invoices";
+      state.error = action.payload;
     });
   },
 });
@@ -112,3 +118,4 @@ export const selectCreateInvoiceError = (state) =>
 export const selectInvoices = (state) => state.invoices.data;
 
 export const selectInvoicesStatus = (state) => state.invoices.status;
+export const selectInvoicesError = (state) => state.invoices.error;

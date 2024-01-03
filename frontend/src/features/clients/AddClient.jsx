@@ -6,15 +6,16 @@ import {
   resetAddClientStatus,
   selectAddClientStatus,
 } from "./clientSlice";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import Button from "../../ui/Button";
+import { validateEmail, validateString } from "../../utils/validateFuncs";
+import { parseImageUrl } from "../../utils/parseImageUrl";
 
 const AddClient = ({ setAddClientModal }) => {
   const status = useSelector(selectAddClientStatus);
   const dispatch = useDispatch();
 
-  const imageInputRef = useRef();
-  const [imageInput, setImageInput] = useState(null);
-  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -31,34 +32,36 @@ const AddClient = ({ setAddClientModal }) => {
   const validateForm = () => {
     setFormErrors({});
 
-    let validateCounter = 0;
+    const validName = validateString(formData.name);
+    const validEmail = validateEmail(formData.email);
+    //  const validNumber = validateString(formData.number);
+    const validAddress = validateString(formData.address);
+    const validCategory = validateString(formData.category);
+    const validStatus = validateString(formData.status);
 
-    if (formData.name.length === 0) {
+    if (!validName) {
       setFormErrors((prev) => ({ ...prev, name: "This field is required" }));
-      validateCounter++;
     }
-    if (formData.email.length === 0) {
+    if (!validEmail) {
       setFormErrors((prev) => ({ ...prev, email: "Invalid email format" }));
-      validateCounter++;
     }
 
-    if (formData.address.length === 0) {
+    if (!validAddress) {
       setFormErrors((prev) => ({ ...prev, address: "This field is required" }));
-      validateCounter++;
     }
-    if (formData.category.length === 0) {
+    if (!validCategory) {
       setFormErrors((prev) => ({
         ...prev,
         category: "Please pick a category",
       }));
-      validateCounter++;
     }
-    if (formData.status.length === 0) {
+    if (!validStatus) {
       setFormErrors((prev) => ({ ...prev, status: "Please select a status" }));
-      validateCounter++;
     }
 
-    return validateCounter === 0;
+    return (
+      validEmail && validEmail && validAddress && validCategory && validStatus
+    );
   };
 
   const handleInputChange = (e) => {
@@ -68,27 +71,33 @@ const AddClient = ({ setAddClientModal }) => {
   const handeSubmit = (e) => {
     e.preventDefault();
 
-    if (!validateForm() || !image) {
+    if (!validateForm()) {
       return;
     }
 
-    dispatch(addClient({ ...formData, image }));
+    dispatch(addClient({ ...formData, image: imageFile ?? null }));
   };
 
-  if (status === "error") {
-    toast.error("Failed to add client");
-    dispatch(resetAddClientStatus());
-  }
-
   useEffect(() => {
-    if (imageInput) {
-      const url = URL.createObjectURL(imageInput);
-      setImage(url);
-      console.log(imageInput);
+    if (status === "success") {
+      toast.success("Client added successfully");
     }
-  }, [imageInput]);
+    if (status === "error") {
+      toast.error("Something went wrong");
+    }
+  }, [status]);
+
+  console.log(imageFile);
+  // useEffect(() => {
+  //   if (imageInput) {
+  //     console.log(imageInput);
+  //     const url = URL.createObjectURL(imageInput);
+  //     setImage(url);
+  //   }
+  // }, [imageInput]);
   return (
     <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-16 py-2 z-50">
+      <Toaster />
       <div className="bg-gray rounded-md shadow-md w-1/2 pb-4 overflow-y-auto">
         <div className="flex items-center gap-16  p-6 border-b border-lightGray">
           <button onClick={() => setAddClientModal(false)}>
@@ -256,18 +265,24 @@ const AddClient = ({ setAddClientModal }) => {
                 className="border bg-transparent  border-lightGray p-2 rounded-md"
               ></textarea>
             </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="notes" className="text-sm">
-                Client Profile Image
+            <div className="mt-4 flex flex-col gap-2">
+              <label
+                htmlFor="image"
+                className="cursor-pointer self-start p-3 text-gray bg-blue rounded-sm text-sm"
+              >
+                Select Client Image
               </label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                onChange={(e) => setImageFile(e.target.files)}
+                className="hidden"
+              />
               <div className="relative w-40 h-40 flex items-center justify-center border-blue border">
-                <input
-                  type="file"
-                  onChange={(e) => setImageInput(e.target.files[0])}
-                />
-                {image && (
+                {imageFile && (
                   <img
-                    src={image}
+                    src={parseImageUrl(imageFile)}
                     className="z-10 absolute w-full h-full object-cover"
                     width={200}
                     height={200}
@@ -282,12 +297,7 @@ const AddClient = ({ setAddClientModal }) => {
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="px-4 py-3  bg-blue text-gray rounded-md"
-              >
-                Add Client
-              </button>
+              <Button pending={status === "pending"}>Add Client</Button>
             </div>
           </form>
         </div>

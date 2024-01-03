@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
-import Overview from "./components/Overview";
-import Clients from "./components/Clients";
-import Transactions from "./components/Transactions";
-import Settings from "./components/Settings";
+import Overview from "./pages/Overview/Overview";
+import Clients from "./pages/Clients/Clients";
+import Transactions from "./pages/Transactions/Transactions";
+import Settings from "./pages/Settings/Settings";
 import Header from "./components/Header";
 import MobileNavHeader from "./components/MobileNavHeader";
 import MobileSidebar from "./components/MobileSidebar";
@@ -21,11 +21,11 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 min-h-screen lg:grid-cols-6">
-      <div className="hidden col-span-1 sticky top-0 h-screen lg:block">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-6">
+      <div className="hidden col-span-1 h-screen sticky top-0 lg:block">
         <Sidebar />
       </div>
-      <div className="lg:pl-10 col-span-5 bg-gray">
+      <div className="h-full lg:pl-10 col-span-5 bg-gray ">
         <div className="hidden lg:block">
           <Header />
         </div>

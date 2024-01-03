@@ -1,14 +1,16 @@
-import Statistics from "./Statistics";
-import InvoicesTable from "../../../features/invoices/InvoicesTable";
+import Statistics from "../../components/Statistics";
+import InvoicesTable from "../../../../features/invoices/InvoicesTable";
 import { useEffect, useState } from "react";
-import CreateInvoice from "../../../features/invoices/CreateInvoice";
+import CreateInvoice from "../../../../features/invoices/CreateInvoice";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchInvoices,
   selectInvoices,
+  selectInvoicesError,
   selectInvoicesStatus,
-} from "../../../features/invoices/invoicesSlice";
-import Loader from "../../../ui/Loader";
+} from "../../../../features/invoices/invoicesSlice";
+import Loader from "../../../../ui/Loader";
+import ReloadButton from "../../../../ui/ReloadButton";
 
 /**
  * Component is responsible for rendering out the overview page and all its components
@@ -16,6 +18,7 @@ import Loader from "../../../ui/Loader";
  */
 const Overview = () => {
   const status = useSelector(selectInvoicesStatus);
+  const error = useSelector(selectInvoicesError);
   const invoices = useSelector(selectInvoices);
   const dispatch = useDispatch();
 
@@ -31,7 +34,7 @@ const Overview = () => {
       {invoiceModalVisibility && (
         <CreateInvoice setInvoiceModalVisibilty={setInvoiceModalVisibilty} />
       )}
-      <div>
+      <div className="relative h-full">
         <div className="flex justify-between items-center my-6">
           <h1 className="font-semibold text-2xl">Overview</h1>
           <button
@@ -49,13 +52,14 @@ const Overview = () => {
             </div>
           </>
         ) : status === "pending" ? (
-          <div className="absolute top-0 left-0 right-0 h-screen">
+          <div className="mt-24">
             <Loader type="lg" />
           </div>
         ) : (
-          <span className="block text-center text-xl text-red-400">
-            An error occured
-          </span>
+          <div className="mt-24 flex flex-col items-center gap-4">
+            <span className="block text-center text-xl text-red">{error}</span>
+            <ReloadButton />
+          </div>
         )}
       </div>
     </>
