@@ -18,8 +18,8 @@ const Input = ({
     throw new Error("onchange prop is required and must be a function");
   }
 
-  const pillClass = "rounded-3xl";
-  const disabledClass = "opacity-70";
+  const pillClass = pill ? "rounded-3xl" : "rounded-sm";
+  const disabledClass = disabled ? "opacity-70" : "";
 
   return (
     <input
@@ -31,9 +31,7 @@ const Input = ({
       value={value}
       onChange={onChange}
       disabled={Boolean(disabled)}
-      className={`${pill ? pillClass : ""} ${
-        disabled ? disabledClass : ""
-      } text-sm w-full bg-white border border-lightGray p-3 focus:outline-blue`}
+      className={`${pillClass} ${disabledClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue`}
     />
   );
 };

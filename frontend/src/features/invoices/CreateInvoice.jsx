@@ -14,6 +14,9 @@ import {
 } from "./invoicesSlice";
 import toast, { Toaster } from "react-hot-toast";
 import { selectCurrentUser } from "../authentication/authSlice";
+import InputGroup from "../../ui/InputGroup";
+import { validateEmail, validateString } from "../../utils/validateFuncs";
+import Button from "../../ui/Button";
 
 /**
  * Component is responsible for displaying the create invoice modal and submitting the form's dats to the backend
@@ -42,49 +45,60 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
 
   const validateForm = () => {
     setFormErrors({});
-    let validateCounter = 0;
+    const validRecipentEmail = validateEmail(formData.recipientEmail);
+    const validDescription = validateString(formData.description);
+    const validBillFrom = validateString(formData.billFrom);
+    const validBillTo = validateString(formData.billTo);
+    const validInvoiceItems = invoiceItems.some((item) =>
+      validateString(item.name)
+    );
 
-    if (formData.recipientEmail.length === 0) {
-      setFormErrors((prev) => ({ ...prev, email: "Invalid email format" }));
-      validateCounter++;
+    if (!validRecipentEmail) {
+      setFormErrors((prev) => ({
+        ...prev,
+        recipientEmail: "Invalid email address",
+      }));
     }
-    if (formData.description.length === 0) {
+    if (!validDescription) {
       setFormErrors((prev) => ({
         ...prev,
         description: "This field is required",
       }));
-      validateCounter++;
     }
-    if (formData.issuedDate.length === 0) {
-      setFormErrors((prev) => ({
-        ...prev,
-        issuedOn: "This field is required",
-      }));
-      validateCounter++;
-    }
-    if (formData.dueDate.length === 0) {
-      setFormErrors((prev) => ({ ...prev, dueOn: "This field is required" }));
-      validateCounter++;
-    }
-    if (formData.billFrom.length === 0) {
+    if (!validBillFrom) {
       setFormErrors((prev) => ({
         ...prev,
         billFrom: "This field is required",
       }));
-      validateCounter++;
     }
-    if (formData.billTo.length === 0) {
+    if (!validBillTo) {
       setFormErrors((prev) => ({ ...prev, billTo: "This field is required" }));
-      validateCounter++;
     }
-    if (!invoiceItems.some((item) => item.name.length > 0)) {
+    if (!validInvoiceItems) {
       setFormErrors((prev) => ({
         ...prev,
         items: "Atleast one item is required",
       }));
     }
 
-    return validateCounter === 0;
+    return (
+      validRecipentEmail &&
+      validDescription &&
+      validBillFrom &&
+      validBillTo &&
+      validInvoiceItems
+    );
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    let items = invoiceItems.filter((item) => validateString(item.name)); // So only valid items get passed to the backend.
+    dispatch(createInvoice({ data: formData, items }));
   };
 
   const handleFormInputChange = (e) => {
@@ -113,7 +127,6 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
         return this.price * this.qty;
       },
     };
-    console.log(itemData);
     setInvoiceItems((prev) => [...prev, itemData]);
   };
   //   function to handle invoice items input change
@@ -139,25 +152,13 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
     setFormData((prev) => ({ ...prev, [name]: date }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    let items = invoiceItems.filter((item) => item.name.length > 0);
-    console.log(currentUser.token);
-    dispatch(createInvoice({ data: formData, items }));
-  };
-
   useEffect(() => {
     if (status === "success") {
       toast.success("Successfully created Invoice");
       dispatch(resetCreateInvoiceStatus());
     }
     if (status === "error") {
-      toast.error("Failed to create invoice");
+      toast.error(error);
       dispatch(resetCreateInvoiceStatus());
     }
   }, [status]);
@@ -186,40 +187,22 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
           className="px-8 flex flex-col gap-4"
           onSubmit={(e) => handleSubmit(e)}
         >
-          <div className="flex flex-col gap-2">
-            <label htmlFor="recipient-email">Recipient Email</label>
-            <input
-              type="text"
-              id="recipient-email"
-              name="recipientEmail"
-              value={formData.email}
-              onChange={(e) => handleFormInputChange(e)}
-              autoComplete="off"
-              className="border border-lightGray p-2 rounded-md bg-transparent "
-            />
-            {formErrors?.email && (
-              <span className="text-red font-semibold text-sm">
-                {formErrors.email}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="description">Product Description</label>
-            <input
-              type="text"
-              name="description"
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleFormInputChange(e)}
-              autoComplete="off"
-              className="border border-lightGray p-2 rounded-md bg-transparent "
-            />
-            {formErrors?.description && (
-              <span className="text-red font-semibold text-sm">
-                {formErrors.description}
-              </span>
-            )}
-          </div>
+          <InputGroup
+            type="text"
+            name="recipientEmail"
+            value={formData.recipientEmail}
+            onChange={handleFormInputChange}
+            error={formErrors.recipientEmail}
+            label="Email"
+          />
+          <InputGroup
+            type="text"
+            name="description"
+            value={formData.description}
+            onChange={handleFormInputChange}
+            error={formErrors.description}
+            label="Product Description"
+          />
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className=" flex flex-col gap-2">
               <label htmlFor="issuedOn">Issued On</label>
@@ -227,7 +210,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 selected={formData.issuedDate}
                 onSelect={(date) => handleDateChange("issuedDate", date)}
                 locale="el"
-                className="w-full bg-transparent p-2 border border-lightGray rounded-md "
+                className="w-full bg-transparent p-3 border border-lightGray rounded-sm focus:outline-blue"
               />
               {formErrors?.issuedOn && (
                 <span className="text-red font-semibold text-sm">
@@ -241,7 +224,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 selected={formData.dueDate}
                 onSelect={(date) => handleDateChange("dueDate", date)}
                 locale="el"
-                className="w-full bg-transparent p-2 border border-lightGray rounded-md "
+                className="w-full bg-transparent p-3 border border-lightGray rounded-sm focus:outline-blue"
               />
               {formErrors?.dueOn && (
                 <span className="text-red font-semibold text-sm">
@@ -249,94 +232,77 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 </span>
               )}
             </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="billFrom">Bill from</label>
-              <input
-                type="text"
-                id="billFrom"
-                name="billFrom"
-                value={formData.billFrom}
-                onChange={(e) => handleFormInputChange(e)}
-                autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent "
-              />
-              {formErrors?.billFrom && (
-                <span className="text-red font-semibold text-sm">
-                  {formErrors.billFrom}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="billTo">Bill to</label>
-              <input
-                type="text"
-                id="billTo"
-                name="billTo"
-                value={formData.billTo}
-                onChange={(e) => handleFormInputChange(e)}
-                autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent "
-              />
-              {formErrors?.billTo && (
-                <span className="text-red font-semibold text-sm">
-                  {formErrors.billTo}
-                </span>
-              )}
-            </div>
+            <InputGroup
+              type="text"
+              name="billFrom"
+              value={formData.billFrom}
+              onChange={handleFormInputChange}
+              error={formErrors.billFrom}
+              label="Bill From"
+            />
+            <InputGroup
+              type="text"
+              name="billTo"
+              value={formData.billTo}
+              onChange={handleFormInputChange}
+              error={formErrors.billTo}
+              label="Bill To"
+            />
           </div>
           <div>
             <span className="font-bold my-4">Invoice Items</span>
             <div className="w-full">
               <table className=" text-left w-full border-separate border-spacing-4 ">
                 <thead>
-                  <th>Item</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th className="hidden lg:block">Total</th>
+                  <tr>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th className="hidden lg:block">Total</th>
+                  </tr>
                 </thead>
                 <tbody>
-                  {invoiceItems &&
-                    invoiceItems.map((item, index) => (
-                      <tr key={index}>
-                        <td className=" border border-lightGray text-ellipsis rounded-md overflow-hidden">
-                          <input
-                            type="text"
-                            className="w-full p-2 bg-transparent "
-                            name="name"
-                            value={item.name}
-                            onChange={(e) =>
-                              handleInvoiceItemsInputChange(e, index)
-                            }
-                          />
-                        </td>
-                        <td className=" border border-lightGray text-ellipsis rounded-md overflow-hidden">
-                          <input
-                            type="number"
-                            step={0.0}
-                            className="w-full p-2 bg-transparent"
-                            name="price"
-                            value={item.price}
-                            onChange={(e) =>
-                              handleInvoiceItemsInputChange(e, index)
-                            }
-                          />
-                        </td>
-                        <td className=" border border-lightGray rounded-md overflow-hidden">
-                          <input
-                            type="number"
-                            className="w-full p-2 bg-transparent "
-                            name="qty"
-                            value={item.qty}
-                            onChange={(e) =>
-                              handleInvoiceItemsInputChange(e, index)
-                            }
-                          />
-                        </td>
-                        <td className="hidden border border-lightGray p-2 rounded-md overflow-hidden lg:block">
-                          {item.total?.toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
+                  {invoiceItems.map((item, index) => (
+                    <tr key={index}>
+                      <td className=" border border-lightGray text-ellipsis rounded-sm overflow-hidden">
+                        <input
+                          type="text"
+                          className="w-full p-2 bg-transparent focus:outline-blue"
+                          name="name"
+                          value={item.name}
+                          onChange={(e) =>
+                            handleInvoiceItemsInputChange(e, index)
+                          }
+                        />
+                      </td>
+                      <td className=" border border-lightGray text-ellipsis rounded-sm overflow-hidden">
+                        <input
+                          type="number"
+                          step={0.0}
+                          className="w-full p-2 bg-transparent focus:outline-blue"
+                          name="price"
+                          value={item.price}
+                          onChange={(e) =>
+                            handleInvoiceItemsInputChange(e, index)
+                          }
+                        />
+                      </td>
+                      <td className=" border border-lightGray rounded-sm overflow-hidden">
+                        <input
+                          type="number"
+                          className="w-full p-2 bg-transparent focus:outline-blue"
+                          name="qty"
+                          value={item.qty}
+                          onChange={(e) =>
+                            handleInvoiceItemsInputChange(e, index)
+                          }
+                        />
+                      </td>
+                      <td className="hidden border border-lightGray p-2 rounded-sm overflow-hidden lg:block">
+                        {item.total?.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
 
@@ -389,7 +355,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               value={formData.additionalNotes}
               onChange={(e) => handleFormInputChange(e)}
               autoComplete="off"
-              className="border bg-transparent  border-lightGray p-2 rounded-md "
+              className="border bg-transparent  border-lightGray p-2 rounded-md focus:outline-blue"
             ></textarea>
           </div>
           <div className="mt-8 flex justify-between">
@@ -400,7 +366,10 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               <button className="p-2">Preview</button>
             </div>
             <div className="flex flex-col gap-2 items-start">
-              {status !== "pending" && (
+              <Button pending={status === "pending"} size="sm">
+                <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
+              </Button>
+              {/* {status !== "pending" && (
                 <button
                   type="submit"
                   className="p-2 flex items-center gap-2 bg-blue text-gray rounded-md"
@@ -415,7 +384,7 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
                 >
                   <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
                 </button>
-              )}
+              )} */}
               <button className="p-2">Print</button>
             </div>
           </div>

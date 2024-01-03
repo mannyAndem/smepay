@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 
 export const createInvoice = createAsyncThunk(
   "invoice/create",
-  async ({ data, items }, { getState, fulfillWithValue }) => {
+  async ({ data, items }, { getState, rejectWithValue }) => {
     const token = getState().auth.currentUser.token;
     console.log(JSON.stringify(data));
     try {
@@ -17,7 +17,7 @@ export const createInvoice = createAsyncThunk(
           },
         }
       );
-      console.log(invoiceResponse.data);
+
       await items.forEach(async (item) => {
         const response = await axios.post(
           `/item/add/${invoiceResponse.data.invoiceId}`,
@@ -31,11 +31,14 @@ export const createInvoice = createAsyncThunk(
         );
         console.log(response);
       });
-
-      return fulfillWithValue("Successfully created invoice");
+      return Promise.resolve();
     } catch (err) {
       console.error(err);
-      return Promise.reject(err);
+      if (err.code === "ERR_NETWORK") {
+        return rejectWithValue("Can't connect to the internet.");
+      }
+
+      return rejectWithValue("Something went wrong.");
     }
   }
 );
@@ -56,7 +59,7 @@ export const fetchInvoices = createAsyncThunk(
     } catch (err) {
       if (err.code === "ERR_NETWORK") {
         return rejectWithValue(
-          "Can't connect to the internet, please try again."
+          "Can't connect to the internet. Please try again."
         );
       }
 
@@ -91,7 +94,7 @@ const invoicesSlice = createSlice({
     });
     builder.addCase(createInvoice.rejected, (state, action) => {
       state.createInvoiceStatus = "error";
-      state.createInvoiceError = "Failed to create invoice";
+      state.createInvoiceError = action.payload;
     });
     builder.addCase(fetchInvoices.pending, (state, action) => {
       state.status = "pending";

@@ -139,6 +139,7 @@ const SignupForm = () => {
               placeholder="Enter first name"
               onChange={handleInputChange}
               error={formErrors.firstName}
+              pill={true}
             />
             <InputGroup
               name="lastName"
@@ -146,6 +147,7 @@ const SignupForm = () => {
               placeholder="Enter your last name"
               onChange={handleInputChange}
               error={formErrors.lastName}
+              pill={true}
             />
           </div>
         </div>
@@ -156,6 +158,7 @@ const SignupForm = () => {
           onChange={handleInputChange}
           error={formErrors.email}
           label="Email"
+          pill={true}
         />
         <InputGroup
           type="password"
@@ -165,6 +168,7 @@ const SignupForm = () => {
           onChange={handleInputChange}
           error={formErrors.password}
           label="Password"
+          pill={true}
         />
         <InputGroup
           type="password"
@@ -174,6 +178,7 @@ const SignupForm = () => {
           onChange={handleInputChange}
           error={formErrors.confirmPassword}
           label="Confirm Password"
+          pill={true}
         />
         <div className="flex flex-col gap-2">
           <div className="flex items-start gap-4">

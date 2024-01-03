@@ -1,6 +1,13 @@
 import Loader from "./Loader";
 
-const Button = ({ children, type, pill, pending, onClick, size }) => {
+const Button = ({
+  children,
+  type = "primary",
+  pill,
+  pending,
+  onClick,
+  size,
+}) => {
   const typeClass = type === "secondary" ? "" : "bg-blue text-gray";
   const pillClass = pill ? "rounded-3xl" : "rounded-sm";
   const pendingClass = pending ? "opacity-70" : "";
