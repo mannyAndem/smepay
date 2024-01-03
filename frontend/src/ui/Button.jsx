@@ -11,12 +11,12 @@ const Button = ({
   const typeClass = type === "secondary" ? "" : "bg-blue text-gray";
   const pillClass = pill ? "rounded-3xl" : "rounded-sm";
   const pendingClass = pending ? "opacity-70" : "";
-  const sizeClass = size === "sm" ? "text-base" : "text-xl";
+  const sizeClass = size === "sm" ? "text-base" : "text-xl font-bold";
 
   return (
     <button
       disabled={Boolean(pending)}
-      className={`${typeClass} ${pillClass} ${pendingClass} ${sizeClass} relative p-3 font-bold`}
+      className={`${typeClass} ${pillClass} ${pendingClass} ${sizeClass} relative p-3`}
       onClick={onClick}
     >
       <span

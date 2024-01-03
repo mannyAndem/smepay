@@ -369,22 +369,6 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
               <Button pending={status === "pending"} size="sm">
                 <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
               </Button>
-              {/* {status !== "pending" && (
-                <button
-                  type="submit"
-                  className="p-2 flex items-center gap-2 bg-blue text-gray rounded-md"
-                >
-                  <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
-                </button>
-              )}
-              {status === "pending" && (
-                <button
-                  type="submit"
-                  className="opacity-30 p-2 flex items-center gap-2 bg-blue text-gray rounded-md"
-                >
-                  <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
-                </button>
-              )} */}
               <button className="p-2">Print</button>
             </div>
           </div>

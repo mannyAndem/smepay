@@ -10,6 +10,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Button from "../../ui/Button";
 import { validateEmail, validateString } from "../../utils/validateFuncs";
 import { parseImageUrl } from "../../utils/parseImageUrl";
+import InputGroup from "../../ui/InputGroup";
 
 const AddClient = ({ setAddClientModal }) => {
   const status = useSelector(selectAddClientStatus);
@@ -87,14 +88,6 @@ const AddClient = ({ setAddClientModal }) => {
     }
   }, [status]);
 
-  console.log(imageFile);
-  // useEffect(() => {
-  //   if (imageInput) {
-  //     console.log(imageInput);
-  //     const url = URL.createObjectURL(imageInput);
-  //     setImage(url);
-  //   }
-  // }, [imageInput]);
   return (
     <div className="fixed overflow-y-auto top-0 left-0 w-screen bg-slate-500  h-screen bg-opacity-50 flex justify-end px-16 py-2 z-50">
       <Toaster />
@@ -111,67 +104,38 @@ const AddClient = ({ setAddClientModal }) => {
             className="px-8 flex flex-col gap-4 w-full"
             onSubmit={(e) => handeSubmit(e)}
           >
-            <div className="flex flex-col gap-2">
-              <label htmlFor="client-name">Client Name</label>
-              <input
-                type="text"
-                id="client-name"
-                name="name"
-                onChange={(e) => handleInputChange(e)}
-                autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
-              />
-              {formErrors?.name && (
-                <span className="text-sm font-semibold text-red">
-                  {formErrors.name}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="client-email">Client Email</label>
-              <input
-                type="text"
-                id="client-email"
-                name="email"
-                onChange={(e) => handleInputChange(e)}
-                autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
-              />
-              {formErrors?.email && (
-                <span className="text-sm font-semibold text-red">
-                  {formErrors.email}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="client-phone">
-                Client Phone Number (Optional)
-              </label>
-              <input
-                type="text"
-                id="client-phone"
-                name="phone"
-                onChange={(e) => handleInputChange(e)}
-                autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="client-address">Client Address</label>
-              <input
-                type="text"
-                id="client-address"
-                name="address"
-                onChange={(e) => handleInputChange(e)}
-                autoComplete="off"
-                className="border border-lightGray p-2 rounded-md bg-transparent"
-              />
-              {formErrors?.address && (
-                <span className="text-sm font-semibold text-red">
-                  {formErrors.address}
-                </span>
-              )}
-            </div>
+            <InputGroup
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              error={formErrors.name}
+              label="Client Name"
+            />
+            <InputGroup
+              type="text"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              error={formErrors.email}
+              label="Client Email"
+            />
+            <InputGroup
+              type="text"
+              name="number"
+              value={formData.number}
+              onChange={handleInputChange}
+              error={formErrors.number}
+              label="Client Phone Number (Optional)"
+            />
+            <InputGroup
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              error={formErrors.address}
+              label="Product Description"
+            />
             <div className="flex justify-between ">
               <div>
                 <h3 className="text-sm font-semibold">Categories</h3>
@@ -207,7 +171,7 @@ const AddClient = ({ setAddClientModal }) => {
                   </label>
                 </div>
                 {formErrors?.category && (
-                  <span className="text-sm font-semibold text-red">
+                  <span className="text-sm text-red">
                     {formErrors.category}
                   </span>
                 )}
@@ -246,16 +210,12 @@ const AddClient = ({ setAddClientModal }) => {
                   </label>
                 </div>
                 {formErrors?.status && (
-                  <span className="text-sm font-semibold text-red">
-                    {formErrors.status}
-                  </span>
+                  <span className="text-sm text-red">{formErrors.status}</span>
                 )}
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="notes" className="text-sm">
-                Additional Notes
-              </label>
+              <label htmlFor="notes">Additional Notes</label>
               <textarea
                 type="text"
                 id="notes"
@@ -297,7 +257,9 @@ const AddClient = ({ setAddClientModal }) => {
               >
                 Cancel
               </button>
-              <Button pending={status === "pending"}>Add Client</Button>
+              <Button size="sm" pending={status === "pending"}>
+                Add Client
+              </Button>
             </div>
           </form>
         </div>
