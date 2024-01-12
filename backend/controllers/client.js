@@ -1,5 +1,8 @@
 const cloudinary = require('cloudinary').v2
 const { validationResult } = require('express-validator')
+const pdfDoc = require('pdfkit')
+const fs = require('fs')
+const path = require('path')
 
 const User = require('../models/user')
 const Client = require('../models/client')
@@ -8,6 +11,7 @@ const Item = require('../models/item')
 const Transaction = require('../models/transaction')
 
 const { cloudinary_api_key, cloudinary_api_secret, cloudinary_name, paystack_secret_key } = require('../config/secret_keys')
+const { sendInvoice } = require('../config/sendmail')
 
 cloudinary.config({
     cloud_name: cloudinary_name,
@@ -53,7 +57,7 @@ exports.addClient = async (req, res, next) => {
 
 
     try {
-        // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const user = await User.findById("658f6f6b1c4fe86457b48265")
         
         const user = await User.findById(req.userId)
         notInDB(user, "User Not Found")
@@ -70,10 +74,10 @@ exports.addClient = async (req, res, next) => {
             }
         )
         const client = new Client({
-            name, email, number, address, category, status, 
-            note, image, 
+            name, email, number, address, 
+            category, status, note, image, 
             user: req.userId
-            // user: "655e652c5eb5ec11f2cce543"
+            // user: "658f6f6b1c4fe86457b48265"
         })
 
         const newClient = await client.save()
@@ -130,12 +134,12 @@ exports.createInvoice = async (req, res) => {
         dueDate, billFrom, billTo } = req.body
 
     try {
-        // const user = await User.findById("6592e5558e799cec74c4a162")
-        const user = await User.findById(req.userId)
+        const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
 
-        // const invQty = await Invoice.find({ user: "6592e5558e799cec74c4a162" }).countDocuments()
-        const invQty = await Invoice.find({ user: req.userId }).countDocuments()
+        const invQty = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" }).countDocuments()
+        // const invQty = await Invoice.find({ user: req.userId }).countDocuments()
         
         const year = issuedDate.getFullYear()
         const month = issuedDate.getMonth() + 1
@@ -149,52 +153,105 @@ exports.createInvoice = async (req, res) => {
 
         const invId = invoice._id;
 
-        await invoice.save()
+        // await invoice.save()
 
-        user.invoices.push(invoice)
-        // await user.save() // no need for this code
+        // user.invoices.push(invoice)
+        // // await user.save() // no need for this code
 
-        // -- TRANSACTION --        
-        // first check if this user has any transaction, and with
-        // a status of pending, if yes add this invoice to it
-        // else, create a new transaction, then add this invoice
-        // to it
+        // // -- TRANSACTION --        
+        // // first check if this user has any transaction, and with
+        // // a status of pending, if yes add this invoice to it
+        // // else, create a new transaction, then add this invoice
+        // // to it
 
-        const existingTrans = await Transaction.findOne({
-            $and: [
-                // { user: "6592e5558e799cec74c4a162" },
-                { user: req.userId },
-                { status: 'pending'}
-            ]
-        })
+        // const existingTrans = await Transaction.findOne({
+        //     $and: [
+        //         { user: "655e652c5eb5ec11f2cce543" },
+        //         // { user: req.userId },
+        //         { status: 'pending'}
+        //     ]
+        // })
 
-        if(existingTrans){
-            // push this invoice into this transaction
-            // increase its outstanding by the amount on invoice
-            existingTrans.invoices.push(invoice)
-            existingTrans.outstanding += invoice.totalAmount
-            await existingTrans.save()
-        }
+        // if(existingTrans){
+        //     // push this invoice into this transaction
+        //     // increase its outstanding by the amount on invoice
+        //     existingTrans.invoices.push(invoice)
+        //     existingTrans.outstanding += invoice.totalAmount
+        //     await existingTrans.save()
+        // }
         
-        if(!existingTrans){
-            // create new transaction for this user
-            // it'll get a "default" pending status
-            const transaction = new Transaction({
-                name: user.fullname, email: user.email, 
-                outstanding: invoice.totalAmount, 
-                user: req.userId
-                // user: "6592e5558e799cec74c4a162"
-            })
-            // return console.log("I got here successfully")
-            transaction.invoices.push(invoice)
-            await transaction.save()
+        // if(!existingTrans){
+        //     // create new transaction for this user
+        //     // it'll get a "default" pending status
+        //     const transaction = new Transaction({
+        //         name: user.fullname, email: user.email, 
+        //         outstanding: invoice.totalAmount, 
+        //         // user: req.userId
+        //         user: "655e652c5eb5ec11f2cce543"
+        //     })
+        //     // return console.log("I got here successfully")
+        //     transaction.invoices.push(invoice)
+        //     await transaction.save()
             
-            user.transactions.push(transaction)
+        //     user.transactions.push(transaction)
+        // }
+        // await user.save()
+        // /// uncomment all up of this
+
+        // after creating invoice, send an email to this user
+        let invoiceDoc
+        if(user){
+            const invoiceName = 'invoice-' + invId + '.pdf'
+            const invoicePath = path.join('data', 'invoices', invoiceName)
+    
+            invoiceDoc = new pdfDoc()
+    
+            res.setHeader('Content-type', 'application/pdf') // helps open files in browser as inline (by default)
+            res.setHeader('Content-Disposition', 'inline: filename="' + invoiceName + '"') // provides save as option
+    
+                
+            invoiceDoc.pipe(fs.createWriteStream(invoicePath))
+            invoiceDoc.pipe(res)
+    
+            invoiceDoc.font('Times-Roman').fontSize(40).text('Invoice')
+            invoiceDoc.font('Times-Roman').fontSize(20).text(`invoiceId: ${invId}`)
+    
+            invoiceDoc.fontSize(14).text(user.name)
+            invoiceDoc.fontSize(14).text(user.email)
+            invoiceDoc.moveDown()
+    
+            const Year = dueDate.getFullYear()
+            const Month = dueDate.getMonth() + 1
+            const Day = dueDate.getDate()
+    
+            invoiceDoc.fontSize(14).text('Issued Date: ' + day + '/' + month + '/' + year + '()', {align: 'right'})
+            invoiceDoc.fontSize(14).text('Due Data: ' + Day + '/' + Month + '/' + Year, {align: 'right'})
+            invoiceDoc.moveDown()
+    
+            invoiceDoc.lineCap('square').moveTo(250, 20).circle(275, 30, 15).stroke();
+            invoiceDoc.fontSize(18).text('ITEMS DESCRIPTION  QTY  UNIT_PRICE  TOTAL').moveDown()
+                
+            let total = 16
+            // order.items.forEach(prod => {
+            //     invoiceDoc.fontSize(15).text(prod.product.title + ' ' + prod.qty + ' ' + prod.product.price + ' ' +(prod.qty * prod.product.price), {align: 'justify'})
+            //     total = total + (prod.qty * prod.product.price)
+            // })
+            // invoiceDoc.moveDown()
+                
+            const dis = 0.02 * total
+    
+            invoiceDoc.text('Subtotal = ' + '$' + total, {align: 'right'})
+            invoiceDoc.text('Discount (2% off) = ' + '$' + dis.toFixed(3), {align: 'right'}).moveDown()
+            invoiceDoc.text('Total = ' + '$' + (total - dis), {align: 'right'}).moveDown()
+    
+            invoiceDoc.font('Times-Roman').fontSize(16).text('Thank you for using SMEPAY')
+            return invoiceDoc.end()
         }
-        await user.save()
+
+        await sendInvoice(user.email, invoiceDoc)
 
         res.status(201).json({
-            message: "Successfully created invoice and opened/updated transaction",
+            message: `Successfully created invoice, opened/updated transaction and sent mail to ${$user.email}`,
             invoiceId: invId
         })
 

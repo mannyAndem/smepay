@@ -83,3 +83,28 @@ app.listen(port_no, "0.0.0.0", () =>
 );
 
 // GUCHI - all over you
+// when faced with a choice, choose both
+
+/* 
+this burning desire for God, sometimes like a rushing wind and 
+at the same time like latex oozing from rubber...
+
+it's an unexplainable hunger and thirst; as the craving 
+for water experienced by one returning from the desert dies 
+a short while after one returns to the "land of the living", 
+so does this feeling fade away after the cares and 
+worries of this world creep in, but deep down one still 
+needs a drink everyday
+
+Grace always abounds, but can we perpetually put one leg in God's
+boat and another in the devil's? God forbid ~
+
+Grace is not a license to sin, but the flesh still wants sin
+Who shall deliver one from this body (yeah, you thought right,
+this body of sin/death)
+
+Unfolding mercies and grace shouldn't be taken for granted, for
+one ought to seek to please God, rather than being merely grateful
+for the availability of these gifts (that we do not deserve) 
+from God, I mean, man is but mere "dust of the ground"
+*/

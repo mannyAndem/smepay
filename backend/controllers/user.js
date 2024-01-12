@@ -2,6 +2,8 @@ const { validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
+const crypto = require('crypto')
+const { resetPassword } = require('../config/sendmail')
 
 
 const User = require('../models/user')
@@ -115,24 +117,24 @@ exports.login = async (req, res, next) => {
     }
 }
 
-exports.refreshToken = async (req, res) => {
-    //
-    const { email, refreshToken } = req.body;
+// exports.refreshToken = async (req, res) => {
+//     //
+//     const { email, refreshToken } = req.body;
 
-    try {
+//     try {
 
-        res.status(200).json({
-            message: "Successfully Authenticated",
-            data: "tokenHere"
-        })
+//         res.status(200).json({
+//             message: "Successfully Authenticated",
+//             data: "tokenHere"
+//         })
         
-    } catch (error) {
-        res.status(500).json({
-            message: "Error Validating Token",
-            info: error.message
-        })
-    }
-}
+//     } catch (error) {
+//         res.status(500).json({
+//             message: "Error Validating Token",
+//             info: error.message
+//         })
+//     }
+// }
 
 // diplay consentscreen using google api
 exports.gglConsentScreen = passport.authenticate(
@@ -181,6 +183,7 @@ exports.resetPassword = async (req, res, next) => {
     
     try {
         const user = await User.findOne({ email })
+        // first confirm if this email exists in database
         if(!user){
             const error = new Error("Email does not exist, please sign up!")
             error.statusCode = 404
@@ -192,8 +195,13 @@ exports.resetPassword = async (req, res, next) => {
         user.tokenExp = Date.now() + 1800000 // expires in 30 mins
         await user.save()
 
-        await funcSendMail(email, 'user/email-redirect', token)
-        res.status(200).json({message: "Successfully sent email"})
+        const emailRes = await resetPassword(email, 'user/email-redirect', token)
+        
+
+        res.status(200).json({
+            message: "Successfully sent email to reset password",
+            data: emailRes,
+        })
 
     } catch (error) {
         next(error)
@@ -203,7 +211,7 @@ exports.resetPassword = async (req, res, next) => {
 exports.newPassword = async (req, res, next) => {
     const { password, confirmpass } = req.body
 
-    if(password !== confirmpass){
+    if(confirmpass !== password){
         const error = new Error("Passwords do not match")
         error.statusCode = 401
         throw error
@@ -226,3 +234,5 @@ exports.newPassword = async (req, res, next) => {
         message: `Successfully reset password for user: ${newUser.email}`
     })
 }
+
+// 937482

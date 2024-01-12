@@ -30,7 +30,7 @@ userCtrl.signup);
 
 router.post('/smepay/login', userCtrl.login);
 
-router.post('/smepay/refresh', userCtrl.refreshToken);
+// router.post('/smepay/refresh', userCtrl.refreshToken);
 
 
 
@@ -46,9 +46,12 @@ router.get('/auth/google/success',
 router.get('/auth/google/failure', userCtrl.onFailure)
 
 // PASSWORD RESET
-router.post('/user/reset-password', authMid, userCtrl.resetPassword)
+// router.post('/user/reset-password', authMid, userCtrl.resetPassword)
+router.post('/user/reset-password', userCtrl.resetPassword)
 
+// // this should be a url in the frontend
 // router.get('/user/email-redirect/?token', userCtrl.emailRedirect)
-router.put('/user/new-password', authMid, userCtrl.newPassword)
+
+router.post('/user/new-password', authMid, userCtrl.newPassword)
 
 module.exports = router;
