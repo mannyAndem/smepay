@@ -17,9 +17,7 @@ const InvoiceDetails = () => {
     const getInvoice = async () => {
       try {
         console.log("fetching...", id);
-        const response = await axios.get(`/invoice/${id}`, {
-          timeout: 10000,
-        });
+        const response = await axios.get(`/invoice/${id}`);
         console.log(response);
         setInvoice(response.data.data);
       } catch (err) {

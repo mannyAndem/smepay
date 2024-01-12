@@ -8,7 +8,8 @@ const Button = ({
   onClick,
   size,
 }) => {
-  const typeClass = type === "secondary" ? "" : "bg-blue text-gray";
+  const typeClass =
+    type === "secondary" ? "border border-blue text-blue" : "bg-blue text-gray";
   const pillClass = pill ? "rounded-3xl" : "rounded-sm";
   const pendingClass = pending ? "opacity-70" : "";
   const sizeClass = size === "sm" ? "text-base" : "text-xl font-bold";

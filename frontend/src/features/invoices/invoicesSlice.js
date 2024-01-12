@@ -19,6 +19,7 @@ export const createInvoice = createAsyncThunk(
       );
 
       await items.forEach(async (item) => {
+        console.log(JSON.stringify(item, ["name", "price", "qty"]));
         const response = await axios.post(
           `/item/add/${invoiceResponse.data.invoiceId}`,
           JSON.stringify(item, ["name", "price", "qty"]),

@@ -1,14 +1,16 @@
-import { useNavigate } from "react-router-dom";
+import Button from "./Button";
+import reloadIcon from "../assets/refresh.png";
 
 const ReloadButton = () => {
-  const navigate = useNavigate();
-
   const handleClick = () => {
-    console.log("Reloading...");
-    navigate();
+    location.reload();
   };
 
-  return <button onClick={handleClick}>Reload</button>;
+  return (
+    <Button type="secondary" size="sm" onClick={handleClick}>
+      Reload <img src={reloadIcon} alt="" />
+    </Button>
+  );
 };
 
 export default ReloadButton;

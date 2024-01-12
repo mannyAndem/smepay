@@ -11,6 +11,7 @@ import {
 } from "../../../../features/invoices/invoicesSlice";
 import Loader from "../../../../ui/Loader";
 import ReloadButton from "../../../../ui/ReloadButton";
+import ErrorMessage from "../../../../ui/ErrorMessage";
 
 /**
  * Component is responsible for rendering out the overview page and all its components
@@ -56,10 +57,7 @@ const Overview = () => {
             <Loader type="lg" />
           </div>
         ) : (
-          <div className="mt-24 flex flex-col items-center gap-4">
-            <span className="block text-center text-xl text-red">{error}</span>
-            <ReloadButton />
-          </div>
+          <ErrorMessage error={error} />
         )}
       </div>
     </>

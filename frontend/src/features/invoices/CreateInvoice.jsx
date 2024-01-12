@@ -154,7 +154,26 @@ const CreateInvoice = ({ setInvoiceModalVisibilty }) => {
 
   useEffect(() => {
     if (status === "success") {
-      toast.success("Successfully created Invoice");
+      toast.success("Invoice created and sent successfully");
+      setFormData({
+        recipientEmail: "",
+        description: "",
+        issuedDate: new Date(),
+        dueDate: new Date(),
+        billFrom: currentUser.fullname,
+        billTo: "",
+        additionalNotes: "",
+      });
+      setInvoiceItems([
+        {
+          name: "",
+          price: 0,
+          qty: 0,
+          get total() {
+            return this.price * this.qty;
+          },
+        },
+      ]);
       dispatch(resetCreateInvoiceStatus());
     }
     if (status === "error") {
