@@ -86,6 +86,7 @@ const LoginForm = () => {
           placeholder="Enter your email"
           error={formErrors?.email}
           label="Email"
+          pill={true}
         />
         <InputGroup
           type="password"
@@ -95,6 +96,7 @@ const LoginForm = () => {
           onChange={handleInputChange}
           error={formErrors.password}
           label="Password"
+          pill={true}
         />
         <Button pending={status === "pending"} pill={true}>
           Sign In

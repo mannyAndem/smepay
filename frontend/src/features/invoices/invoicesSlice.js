@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 
 export const createInvoice = createAsyncThunk(
   "invoice/create",
-  async ({ data, items }, { getState }) => {
+  async ({ data, items }, { getState, rejectWithValue }) => {
     const token = getState().auth.currentUser.token;
     console.log(JSON.stringify(data));
     try {
@@ -17,31 +17,35 @@ export const createInvoice = createAsyncThunk(
           },
         }
       );
-      console.log(invoiceResponse.data);
-      // await items.forEach(async (item) => {
-      //   await axios.post(
-      //     `/item/add/${invoiceResponse.data.data._id}`,
-      //     JSON.stringify(item, ["name", "price", "qty"]),
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ${token}`,
-      //         "Content-Type": "application/json",
-      //       },
-      //     }
-      //   );
-      // });
 
-      return invoiceResponse.data;
+      await items.forEach(async (item) => {
+        const response = await axios.post(
+          `/item/add/${invoiceResponse.data.invoiceId}`,
+          JSON.stringify(item, ["name", "price", "qty"]),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response);
+      });
+      return Promise.resolve();
     } catch (err) {
       console.error(err);
-      return Promise.reject(err);
+      if (err.code === "ERR_NETWORK") {
+        return rejectWithValue("Can't connect to the internet.");
+      }
+
+      return rejectWithValue("Something went wrong.");
     }
   }
 );
 
 export const fetchInvoices = createAsyncThunk(
   "invoices/fetch",
-  async (data, { getState }) => {
+  async (data, { getState, rejectWithValue }) => {
     const token = getState().auth.currentUser.token;
 
     try {
@@ -50,9 +54,16 @@ export const fetchInvoices = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response.data);
       return response.data.data;
     } catch (err) {
-      return Promise.reject(err);
+      if (err.code === "ERR_NETWORK") {
+        return rejectWithValue(
+          "Can't connect to the internet. Please try again."
+        );
+      }
+
+      return rejectWithValue("Something went wrong.");
     }
   }
 );
@@ -83,7 +94,7 @@ const invoicesSlice = createSlice({
     });
     builder.addCase(createInvoice.rejected, (state, action) => {
       state.createInvoiceStatus = "error";
-      state.createInvoiceError = "Failed to create invoice";
+      state.createInvoiceError = action.payload;
     });
     builder.addCase(fetchInvoices.pending, (state, action) => {
       state.status = "pending";
@@ -92,9 +103,9 @@ const invoicesSlice = createSlice({
       state.status = "success";
       state.data = action.payload;
     });
-    builder.addCase(fetchInvoices.rejected, (state) => {
+    builder.addCase(fetchInvoices.rejected, (state, action) => {
       state.status = "error";
-      state.error = "Error while fetching invoices";
+      state.error = action.payload;
     });
   },
 });
@@ -110,3 +121,4 @@ export const selectCreateInvoiceError = (state) =>
 export const selectInvoices = (state) => state.invoices.data;
 
 export const selectInvoicesStatus = (state) => state.invoices.status;
+export const selectInvoicesError = (state) => state.invoices.error;
