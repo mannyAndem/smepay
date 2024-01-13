@@ -48,8 +48,7 @@ router.post('/invoice/create', [
         .withMessage('billFrom cannot be empty'),
     body('billTo').not().isEmpty()
         .withMessage('billTo cannot be empty'),
-// ], authMid, clientCtrl.createInvoice);
-], clientCtrl.createInvoice);
+], authMid, clientCtrl.createInvoice);
 
 router.post('/paystack/initiate/:transactionId', authMid, clientCtrl.initiatePayment);
 
