@@ -1,4 +1,5 @@
 const sgMail = require('@sendgrid/mail')
+const fs = require('fs')
 
 const { sendgrid_api_key } = require('../config/secret_keys')
 
@@ -36,31 +37,32 @@ const resetPassword = async (userEmail, url, token) => {
 
     return result
 }
-const sendInvoice = async (userEmail, invoiceDoc) => {
+const sendInvoice = async (userEmail, invoiceLink) => {
     const msg = {
         to: userEmail,
         from: 'victorotubure7@gmail.com',
         subject: `Invoice created for ${userEmail}`,
         html: `
-            <p> You have successfully created an invoice on smepay app, and attached to this is a copy of the invoice </p>
+            <h3> You have successfully created an invoice with id: <strong> ${invoiceLink} </strong> on smepay app </h3>
             <br>
             <p> Please return to the smepay app to <a href="smepayonrender.com/smepay/invoice"> manage your invoice </a> and also add tons of items to your invoice </p>
+            <p> You can also download your pdf by clicking on <a href="${invoiceLink}"> view PDF </a> to check </p>
+
+            <p> Find attached the pdf of the invoice </p>
         `,
-        attachments: [
-            {
-                content: invoiceDoc,
-                filename: 'invoice.pdf',
-                type: 'application/pdf',
-                disposition: 'attachment'
-            }
-        ]
-        
+        // attachments: [
+        //     {
+                
+        //         content: invoiceLink,
+        //         filename: 'invoice.pdf',
+        //         type: 'application/pdf',
+        //         disposition: 'attachment'
+        //     }
+        // ]  
     };
     
     const result = await sgMail.send(msg)
     nullData(result)
-
-    // return result
 }
 
 
