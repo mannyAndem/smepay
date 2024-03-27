@@ -134,12 +134,12 @@ exports.createInvoice = async (req, res) => {
         dueDate, billFrom, billTo } = req.body
 
     try {
-        const user = await User.findById("655e652c5eb5ec11f2cce543")
-        // const user = await User.findById(req.userId)
+        // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        const user = await User.findById(req.userId)
         notInDB(user, 'User Not Found')
 
-        const invQty = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" }).countDocuments()
-        // const invQty = await Invoice.find({ user: req.userId }).countDocuments()
+        // const invQty = await Invoice.find({ user: "655e652c5eb5ec11f2cce543" }).countDocuments()
+        const invQty = await Invoice.find({ user: req.userId }).countDocuments()
         
         const year = issuedDate.getFullYear()
         const month = issuedDate.getMonth() + 1
@@ -153,107 +153,115 @@ exports.createInvoice = async (req, res) => {
 
         const invId = invoice._id;
 
-        // await invoice.save()
+        await invoice.save()
 
-        // user.invoices.push(invoice)
-        // // await user.save() // no need for this code
+        user.invoices.push(invoice)
+        // await user.save() // no need for this code
 
-        // // -- TRANSACTION --        
-        // // first check if this user has any transaction, and with
-        // // a status of pending, if yes add this invoice to it
-        // // else, create a new transaction, then add this invoice
-        // // to it
+        // -- TRANSACTION --        
+        // first check if this user has any transaction, and with
+        // a status of pending, if yes add this invoice to it
+        // else, create a new transaction, then add this invoice
+        // to it
 
-        // const existingTrans = await Transaction.findOne({
-        //     $and: [
-        //         { user: "655e652c5eb5ec11f2cce543" },
-        //         // { user: req.userId },
-        //         { status: 'pending'}
-        //     ]
-        // })
+        const existingTrans = await Transaction.findOne({
+            $and: [
+                // { user: "655e652c5eb5ec11f2cce543" },
+                { user: req.userId },
+                { status: 'pending'}
+            ]
+        })
 
-        // if(existingTrans){
-        //     // push this invoice into this transaction
-        //     // increase its outstanding by the amount on invoice
-        //     existingTrans.invoices.push(invoice)
-        //     existingTrans.outstanding += invoice.totalAmount
-        //     await existingTrans.save()
-        // }
+        if(existingTrans){
+            // push this invoice into this transaction
+            // increase its outstanding by the amount on invoice
+            existingTrans.invoices.push(invoice)
+            existingTrans.outstanding += invoice.totalAmount
+            await existingTrans.save()
+        }
         
-        // if(!existingTrans){
-        //     // create new transaction for this user
-        //     // it'll get a "default" pending status
-        //     const transaction = new Transaction({
-        //         name: user.fullname, email: user.email, 
-        //         outstanding: invoice.totalAmount, 
-        //         // user: req.userId
-        //         user: "655e652c5eb5ec11f2cce543"
-        //     })
-        //     // return console.log("I got here successfully")
-        //     transaction.invoices.push(invoice)
-        //     await transaction.save()
+        if(!existingTrans){
+            // create new transaction for this user
+            // it'll get a "default" pending status
+            const transaction = new Transaction({
+                name: user.fullname, email: user.email, 
+                outstanding: invoice.totalAmount, 
+                user: req.userId
+                // user: "655e652c5eb5ec11f2cce543"
+            })
+            // return console.log("I got here successfully")
+            transaction.invoices.push(invoice)
+            await transaction.save()
             
-        //     user.transactions.push(transaction)
-        // }
-        // await user.save()
-        // /// uncomment all up of this
+            user.transactions.push(transaction)
+        }
+        await user.save()
 
-        // after creating invoice, send an email to this user
-        let invoiceDoc
-        if(user){
-            const invoiceName = 'invoice-' + invId + '.pdf'
-            const invoicePath = path.join('data', 'invoices', invoiceName)
-    
-            invoiceDoc = new pdfDoc()
-    
-            res.setHeader('Content-type', 'application/pdf') // helps open files in browser as inline (by default)
-            res.setHeader('Content-Disposition', 'inline: filename="' + invoiceName + '"') // provides save as option
-    
-                
-            invoiceDoc.pipe(fs.createWriteStream(invoicePath))
-            invoiceDoc.pipe(res)
-    
-            invoiceDoc.font('Times-Roman').fontSize(40).text('Invoice')
-            invoiceDoc.font('Times-Roman').fontSize(20).text(`invoiceId: ${invId}`)
-    
-            invoiceDoc.fontSize(14).text(user.name)
-            invoiceDoc.fontSize(14).text(user.email)
-            invoiceDoc.moveDown()
-    
-            const Year = dueDate.getFullYear()
-            const Month = dueDate.getMonth() + 1
-            const Day = dueDate.getDate()
-    
-            invoiceDoc.fontSize(14).text('Issued Date: ' + day + '/' + month + '/' + year + '()', {align: 'right'})
-            invoiceDoc.fontSize(14).text('Due Data: ' + Day + '/' + Month + '/' + Year, {align: 'right'})
-            invoiceDoc.moveDown()
-    
-            invoiceDoc.lineCap('square').moveTo(250, 20).circle(275, 30, 15).stroke();
-            invoiceDoc.fontSize(18).text('ITEMS DESCRIPTION  QTY  UNIT_PRICE  TOTAL').moveDown()
-                
-            let total = 16
-            // order.items.forEach(prod => {
-            //     invoiceDoc.fontSize(15).text(prod.product.title + ' ' + prod.qty + ' ' + prod.product.price + ' ' +(prod.qty * prod.product.price), {align: 'justify'})
-            //     total = total + (prod.qty * prod.product.price)
-            // })
-            // invoiceDoc.moveDown()
-                
-            const dis = 0.02 * total
-    
-            invoiceDoc.text('Subtotal = ' + '$' + total, {align: 'right'})
-            invoiceDoc.text('Discount (2% off) = ' + '$' + dis.toFixed(3), {align: 'right'}).moveDown()
-            invoiceDoc.text('Total = ' + '$' + (total - dis), {align: 'right'}).moveDown()
-    
-            invoiceDoc.font('Times-Roman').fontSize(16).text('Thank you for using SMEPAY')
-            return invoiceDoc.end()
+        
+        // generate pdf of invoice
+        const invoiceName = 'invoice-' + invId + '.pdf'
+        const invoicePath = path.join('data', 'pdf',  invoiceName)
+
+        const invoiceDoc = new pdfDoc({
+            size: 'letter',
+            font: 'Times-Roman',
+            fontSize: 14,
+        })
+
+        res.setHeader('Content-Disposition', 'attachment; filename="' + invoiceName + '"') // provides save as option
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Content-Type', 'application/pdf') // helps open files in browser as inline (by default)
+        res.status(201)
+
+        invoiceDoc.pipe(fs.createWriteStream(invoicePath))
+        await invoiceDoc.pipe(res)
+
+        invoiceDoc.fontSize(40).text('Invoice')
+        invoiceDoc.fontSize(20).text(`invoiceId: ${invId}`)
+
+        invoiceDoc.text(user.name)
+        invoiceDoc.text(user.email)
+        invoiceDoc.moveDown()
+
+        const Year = dueDate.getFullYear()
+        const Month = dueDate.getMonth() + 1
+        const Day = dueDate.getDate()
+
+        invoiceDoc.text('Issued Date: ' + day + '/' + month + '/' + year + '()', {align: 'right'})
+        invoiceDoc.text('Due Data: ' + Day + '/' + Month + '/' + Year, {align: 'right'})
+        invoiceDoc.moveDown()
+
+        invoiceDoc.lineCap('square').moveTo(250, 20).circle(275, 30, 15).stroke();
+        invoiceDoc.fontSize(18).text('ITEMS DESCRIPTION  QTY  UNIT_PRICE  TOTAL').moveDown()
+            
+        let total = 16                
+        const dis = 0.02 * total
+
+        invoiceDoc.text('Subtotal = ' + '$' + total, {align: 'right'})
+        invoiceDoc.text('Discount (2% off) = ' + '$' + dis.toFixed(3), {align: 'right'}).moveDown()
+        invoiceDoc.text('Total = ' + '$' + (total - dis), {align: 'right'}).moveDown()
+
+        invoiceDoc.fontSize(16).text('Thank you for using SMEPAY')
+        
+        //// BEGIN
+        try {
+            const cloudResp = await cloudinary.uploader.upload(
+                invoicePath,
+                {
+                    resource_type: 'raw',
+                    public_id: 'output.pdf',
+                }
+            )
+            console.log(cloudResp.secure_url)
+            sendInvoice(user.email, cloudResp.secure_url)
+
+        } catch (error) {
+            console.log(`Error uploading to cloudinary, ${error}`)
+            throw error
         }
 
-        await sendInvoice(user.email, invoiceDoc)
+        invoiceDoc.end()
 
-        res.status(201).json({
-            message: `Successfully created invoice, opened/updated transaction and sent mail to ${$user.email}`,
-            invoiceId: invId
-        })
 
     } catch (error) {
         res.status(500).json({
