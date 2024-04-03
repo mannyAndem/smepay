@@ -2,22 +2,26 @@ import Loader from "./Loader";
 
 const Button = ({
   children,
-  type = "primary",
+  variant = "primary",
   pill,
   pending,
   onClick,
   size,
+  disabled,
+  type,
 }) => {
   const typeClass =
-    type === "secondary" ? "border border-blue text-blue" : "bg-blue text-gray";
+    variant === "secondary"
+      ? "border border-blue text-blue"
+      : "bg-blue text-gray";
   const pillClass = pill ? "rounded-3xl" : "rounded-sm";
-  const pendingClass = pending ? "opacity-70" : "";
   const sizeClass = size === "sm" ? "text-base" : "text-xl font-bold";
 
   return (
     <button
-      disabled={Boolean(pending)}
-      className={`${typeClass} ${pillClass} ${pendingClass} ${sizeClass} relative p-3`}
+      type={type}
+      disabled={!!pending || disabled}
+      className={`${typeClass} ${pillClass} ${sizeClass} relative p-3 disabled:opacity-70`}
       onClick={onClick}
     >
       <span
@@ -29,7 +33,7 @@ const Button = ({
       </span>
       {pending && (
         <div className=" absolute top-0 left-0 right-0 bottom-0">
-          <Loader color={type == "primary" ? "#D9D9D9" : null} />
+          <Loader color={variant == "primary" ? "#D9D9D9" : null} />
         </div>
       )}
     </button>

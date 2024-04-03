@@ -44,7 +44,7 @@ const Statistics = ({ invoices }) => {
         </div>
       ))}
       <div className="lg:row-start-1 lg:col-start-3 col-span-1 row-span-2">
-        <InvoiceStatsCard />
+        <InvoiceStatsCard invoices={invoices} />
       </div>
     </div>
   );

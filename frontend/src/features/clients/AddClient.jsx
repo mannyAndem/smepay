@@ -8,7 +8,6 @@ import {
 } from "./clientSlice";
 import toast, { Toaster } from "react-hot-toast";
 import Button from "../../ui/Button";
-import { validateEmail, validateString } from "../../utils/validateFuncs";
 import { parseImageUrl } from "../../utils/parseImageUrl";
 import InputGroup from "../../ui/InputGroup";
 
@@ -31,38 +30,36 @@ const AddClient = ({ setAddClientModal }) => {
   const [formErrors, setFormErrors] = useState({});
 
   const validateForm = () => {
-    setFormErrors({});
+    // setFormErrors({});
 
-    const validName = validateString(formData.name);
-    const validEmail = validateEmail(formData.email);
-    //  const validNumber = validateString(formData.number);
-    const validAddress = validateString(formData.address);
-    const validCategory = validateString(formData.category);
-    const validStatus = validateString(formData.status);
+    // const validName = validateString(formData.name);
+    // const validEmail = validateEmail(formData.email);
+    // //  const validNumber = validateString(formData.number);
+    // const validAddress = validateString(formData.address);
+    // const validCategory = validateString(formData.category);
+    // const validStatus = validateString(formData.status);
 
-    if (!validName) {
-      setFormErrors((prev) => ({ ...prev, name: "This field is required" }));
-    }
-    if (!validEmail) {
-      setFormErrors((prev) => ({ ...prev, email: "Invalid email format" }));
-    }
+    // if (!validName) {
+    //   setFormErrors((prev) => ({ ...prev, name: "This field is required" }));
+    // }
+    // if (!validEmail) {
+    //   setFormErrors((prev) => ({ ...prev, email: "Invalid email format" }));
+    // }
 
-    if (!validAddress) {
-      setFormErrors((prev) => ({ ...prev, address: "This field is required" }));
-    }
-    if (!validCategory) {
-      setFormErrors((prev) => ({
-        ...prev,
-        category: "Please pick a category",
-      }));
-    }
-    if (!validStatus) {
-      setFormErrors((prev) => ({ ...prev, status: "Please select a status" }));
-    }
+    // if (!validAddress) {
+    //   setFormErrors((prev) => ({ ...prev, address: "This field is required" }));
+    // }
+    // if (!validCategory) {
+    //   setFormErrors((prev) => ({
+    //     ...prev,
+    //     category: "Please pick a category",
+    //   }));
+    // }
+    // if (!validStatus) {
+    //   setFormErrors((prev) => ({ ...prev, status: "Please select a status" }));
+    // }
 
-    return (
-      validEmail && validEmail && validAddress && validCategory && validStatus
-    );
+    return true;
   };
 
   const handleInputChange = (e) => {

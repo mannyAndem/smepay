@@ -1,6 +1,8 @@
 import Input from "./Input";
+import InputError from "./InputErrors";
 
 const InputGroup = ({
+  isInvalid,
   label,
   type,
   placeholder,
@@ -29,7 +31,7 @@ const InputGroup = ({
         placeholder={placeholder}
         pill={pill}
       />
-      {error && <span className="text-xs text-red">{error}</span>}
+      <InputError isInvalid={isInvalid} error={error} />
     </div>
   );
 };
