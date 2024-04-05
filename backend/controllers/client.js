@@ -271,68 +271,68 @@ exports.createInvoice = async (req, res) => {
     }
 }
 
-exports.initiatePayment = async (req, res) => {
-    const { transactionId } = req.parmas
 
-    const options = {
-        hostname: 'api.paystack.co',
-        port: 443,
-        path: '/transaction/initialize',
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${paystack_secret_key}`,
-            'Content-Type': 'application/json',
-        }
-    }
-    
+// this function sends back the specific invoice info so that
+// the user doen't have to reenter details that won't change
+exports.getEditInvoice = async (req, res) => {
+    const invoiceID = req.params.invoiceId;
+
     try {
-        const user = await User.findById("655e652c5eb5ec11f2cce543")
-        // const user = await User.findById(req.userId)
-        notInDB(user, "User Not Found")
+        // const invoice = await Invoice.findById("6586129ab1ef1ec3b32b087b")
+        const invoice = await Invoice.findById(invoiceID)
+        notInDB(invoice, 'Invoice Not Found')   
+
+        const { recipientEmail, description, issuedDate, 
+                dueDate, billFrom, billTo } = invoice;
         
-        const transaction = await Transaction.find({
-            $and: [
-                { _id: transactionId},
-                // { user: req.userId }
-                { user: "655e652c5eb5ec11f2cce543" }
-            ]
+        res.status(200).json({
+            recipientEmail, description, issuedDate, 
+            dueDate, billFrom, billTo
         })
-        notInDB(transaction, "Transaction Not Found")
-
-        const amount = transaction.outstanding
-        const email = user.email
-        const params = JSON.stringify({
-            "email": email, "amount": amount * 100 
-        })
-        
-        const request = await https.request(options, apiRes => {
-            let data = ''
-            apiRes.on('data', chunk => { data += chunk })
-            apiRes.on('end', () => {
-                return res.status(200).json(data)
-            })
-        }).on('error', err => { return res.status(400).json(err) })
-
-        request.write(params)
-        request.end()    
-
-        // TRANSACTION
-        // set transaction status to completed upon complete payment
-        // maybe in the confirmPayment controller instead
-
 
     } catch (error) {
-        console.log(error)
         res.status(500).json({
-            error: "Error Processing Payment",
+            message: "Error Fetching Invoice Details",
             info: error.message
         })
     }
 }
 
-exports.verifyPayment = async (req, res) => {
-    //
+exports.postEditInvoice = async (req, res) => {
+    const invoiceID = req.params.invoiceId
+    validateFunc(req)
+
+    const { recipientEmail, description, issuedDate, 
+        dueDate, billFrom, billTo } = req.body
+
+    try {
+        // const invoice = await Invoice.find({ _id: "6586129ab1ef1ec3b32b087b", user: "655e652c5eb5ec11f2cce543" })
+        const invoice = await Invoice.find({ _id: invoiceID, user: req.userId })
+        notInDB(invoice, 'No Invoice Found or Unauthorized Access')
+
+        invoice.recipientEmail = recipientEmail
+        invoice.description = description
+        invoice.issuedDate = issuedDate
+        invoice.dueDate = dueDate
+        invoice.billFrom = billFrom
+        invoice.billTo = billTo
+
+        const editedInvoice = await invoice.save()
+
+        res.status(201).json({
+            message: "Successfully edited invoice",
+            data: editedInvoice
+        })
+        
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Error Creating Invoice",
+            info: error.message
+        })
+    }
 }
+
 
 exports.getInvoice = async (req, res) => {
     const { invoiceId } = req.params
@@ -365,6 +365,37 @@ exports.fetchInvoice = async (req, res) => {
         res.status(200).json({
             message: `Successfully Fetched All Invoices For ${user.fullname}`,
             data: invoices
+        })
+    } catch (error) {
+        res.status(200).json({
+            message: "Error Fetching All Invoices",
+            info: error.message
+        })
+    }
+}
+
+exports.deleteInvoice = async (req, res) => {
+    const invoiceID = req.params.invoiceId
+    try {
+        // const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const invoice = await Invoice.find({ _id: "6586129ab1ef1ec3b32b087b", user: "655e652c5eb5ec11f2cce543" })
+        
+        const user = await User.findById(req.userId)
+        notInDB(user, 'User Not Found')
+
+        const invoice = await Invoice.find({ _id: invoiceID, user: req.userId })
+        notInDB(invoice, 'No Invoice Found or Unauthorized Access')
+
+        // delete this invoice from database
+        await Invoice.findByIdAndRemove(invoiceID)
+        
+        // remove this invoice from user's invoice array
+        user.invoices.pull(invoiceID)
+        await user.save()
+
+        res.status(200).json({
+            message: `Successfully Deleted Invoice For ${user.fullname}`,
+            data: invoice
         })
     } catch (error) {
         res.status(200).json({
@@ -500,4 +531,70 @@ exports.fetchTransactions = async (req, res) => {
             info: error.message
         })
     }
+}
+
+
+
+// -- PAYMENTS --
+exports.initiatePayment = async (req, res) => {
+    const { transactionId } = req.parmas
+
+    const options = {
+        hostname: 'api.paystack.co',
+        port: 443,
+        path: '/transaction/initialize',
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${paystack_secret_key}`,
+            'Content-Type': 'application/json',
+        }
+    }
+    
+    try {
+        const user = await User.findById("655e652c5eb5ec11f2cce543")
+        // const user = await User.findById(req.userId)
+        notInDB(user, "User Not Found")
+        
+        const transaction = await Transaction.find({
+            $and: [
+                { _id: transactionId},
+                // { user: req.userId }
+                { user: "655e652c5eb5ec11f2cce543" }
+            ]
+        })
+        notInDB(transaction, "Transaction Not Found")
+
+        const amount = transaction.outstanding
+        const email = user.email
+        const params = JSON.stringify({
+            "email": email, "amount": amount * 100 
+        })
+        
+        const request = await https.request(options, apiRes => {
+            let data = ''
+            apiRes.on('data', chunk => { data += chunk })
+            apiRes.on('end', () => {
+                return res.status(200).json(data)
+            })
+        }).on('error', err => { return res.status(400).json(err) })
+
+        request.write(params)
+        request.end()    
+
+        // TRANSACTION
+        // set transaction status to completed upon complete payment
+        // maybe in the confirmPayment controller instead
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error: "Error Processing Payment",
+            info: error.message
+        })
+    }
+}
+
+exports.verifyPayment = async (req, res) => {
+    //
 }

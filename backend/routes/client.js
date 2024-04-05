@@ -50,14 +50,31 @@ router.post('/invoice/create', [
         .withMessage('billTo cannot be empty'),
 ], authMid, clientCtrl.createInvoice);
 
-router.post('/paystack/initiate/:transactionId', authMid, clientCtrl.initiatePayment);
+router.get('/invoice/edit/:invoiceId', authMid, clientCtrl.getEditInvoice)
 
-router.post('/paystack/verify', authMid, clientCtrl.verifyPayment);
-
+router.put('/invoice/update/:invoiceId', [
+    body('recipientEmail').isEmail()
+        .withMessage("Invalid Email")
+        .normalizeEmail({
+            gmail_remove_dots: false
+        }),
+    body('description').not().isEmpty()
+        .withMessage("Descriptioin cannot be blank"),
+    body('issuedDate').isISO8601().toDate()
+        .withMessage('Invalid Date'),
+    body('dueDate').isISO8601().toDate()
+        .withMessage('Invalid Date'),
+    body('billFrom').not().isEmpty()
+        .withMessage('billFrom cannot be empty'),
+    body('billTo').not().isEmpty()
+        .withMessage('billTo cannot be empty'),
+], authMid, clientCtrl.postEditInvoice);
 
 router.get('/invoice/:invoiceId', authMid, clientCtrl.getInvoice);
 
 router.get('/invoice', authMid, clientCtrl.fetchInvoice);
+
+router.delete('/invoice/delete/:invoiceId', authMid, clientCtrl.deleteInvoice);
 
 
 
@@ -83,6 +100,8 @@ router.get('/transaction/:transactionId', authMid, clientCtrl.getTransaction);
 
 router.get('/transactions', authMid, clientCtrl.fetchTransactions);
 
+router.post('/paystack/initiate/:transactionId', authMid, clientCtrl.initiatePayment);
 
+router.post('/paystack/verify', authMid, clientCtrl.verifyPayment);
 
 module.exports = router;
