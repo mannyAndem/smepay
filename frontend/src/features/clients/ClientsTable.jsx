@@ -3,7 +3,7 @@ import Loader from "../../ui/Loader";
 
 const ClientsTable = ({ clients }) => {
   return (
-    <div className=" my-16  bg-white rounded-md shadow-md ">
+    <div className="my-16  bg-white rounded-md shadow-md pb-4">
       <div className="flex items-center justify-between  p-6">
         <div className="flex">
           <span className="px-2 py-1 border-r text-sm font-semibold text-green">
@@ -21,14 +21,11 @@ const ClientsTable = ({ clients }) => {
           </select>
         </div>
       </div>
-      {status === "idle" ? (
-        <div></div>
-      ) : status === "pending" ? (
-        <div className="w-full flex justify-center items-center">
-          <Loader type="md" />
-        </div>
-      ) : status === "error" ? (
-        <span className="block text center text-red">An error occured</span>
+      {clients.length === 0 ? (
+        <span className="block text-xl text-center font-medium my-8">
+          Add your first client by clicking the{" "}
+          <span className="text-blue">Add Client</span> button!
+        </span>
       ) : (
         <table className="w-full text-center">
           <thead className="bg-veryDarkBlue text-gray font-semibold">

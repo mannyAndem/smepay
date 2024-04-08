@@ -15,7 +15,6 @@ const Input = ({
   ...rest
 }) => {
   const pillClass = pill ? "rounded-3xl" : "rounded-sm";
-  const disabledClass = disabled ? "opacity-70" : "";
 
   return type === "date" ? (
     <DatePicker
@@ -26,7 +25,7 @@ const Input = ({
       className={
         className
           ? className
-          : `${pillClass} ${disabledClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue`
+          : `${pillClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue disabled:opacity-70`
       }
     />
   ) : (
@@ -42,7 +41,7 @@ const Input = ({
       className={
         className
           ? className
-          : `${pillClass} ${disabledClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue`
+          : `${pillClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue disabled:opacity-70`
       }
       {...rest}
     />

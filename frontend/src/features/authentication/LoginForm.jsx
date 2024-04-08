@@ -40,7 +40,6 @@ const LoginForm = () => {
   }, [data, isSuccess, isError, dispatch, error, navigate]);
 
   const handleSubmit = (values) => {
-    console.log(values);
     login(values);
   };
 

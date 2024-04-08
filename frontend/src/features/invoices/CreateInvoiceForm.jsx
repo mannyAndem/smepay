@@ -8,12 +8,14 @@ import * as yup from "yup";
 import InputError from "../../ui/InputErrors";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useCreateInvoiceMutation } from "../api/apiSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 const CreateInvoiceForm = () => {
   const [createInvoice, { isSuccess, isError, isLoading }] =
     useCreateInvoiceMutation();
+
   const initialValues = {
     recipientEmail: "",
     description: "",
@@ -55,192 +57,205 @@ const CreateInvoiceForm = () => {
       .min(1, "You must add an item"),
   });
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Invoice created successfully!");
+    }
+    if (isError) {
+      toast.error("Something went wrong.");
+    }
+  }, [isSuccess, isError, toast]);
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      validationSchema={formSchema}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        dirty,
-        handleChange,
-        isValid,
-        setFieldValue,
-        handleSubmit,
-      }) => (
-        <form className="px-8 flex flex-col gap-4" onSubmit={handleSubmit}>
-          <InputGroup
-            isInvalid={!!errors.recipientEmail && !!touched?.recipientEmail}
-            type="text"
-            name="recipientEmail"
-            value={values.recipientEmail}
-            onChange={handleChange}
-            error={errors.recipientEmail}
-            label="Email"
-          />
-          <InputGroup
-            isInvalid={!!errors.description && !!touched?.description}
-            type="text"
-            name="description"
-            value={values.description}
-            onChange={handleChange}
-            error={errors.description}
-            label="Description"
-          />
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <>
+      <Toaster />
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={formSchema}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          dirty,
+          handleChange,
+          isValid,
+          setFieldValue,
+          handleSubmit,
+        }) => (
+          <form className="px-8 flex flex-col gap-4" onSubmit={handleSubmit}>
             <InputGroup
-              isInvalid={!!errors.issuedDate && !!touched.issuedDate}
-              type="date"
-              name="issuedDate"
-              value={values.issuedDate}
-              onChange={setFieldValue}
-              error={errors.issuedDate}
-              label="Issued on"
-            />
-            <InputGroup
-              isInvalid={!!errors.dueDate && !!touched.dueDate}
-              type="date"
-              name="dueDate"
-              value={values.dueDate}
-              onChange={setFieldValue}
-              error={errors.dueDate}
-              label="Due on"
-            />
-            <InputGroup
-              isInvalid={!!errors.billFrom && !!touched.billFrom}
+              isInvalid={!!errors.recipientEmail && !!touched?.recipientEmail}
               type="text"
-              name="billFrom"
-              value={values.billFrom}
+              name="recipientEmail"
+              value={values.recipientEmail}
               onChange={handleChange}
-              error={errors.billFrom}
-              label="Bill From"
+              error={errors.recipientEmail}
+              label="Email"
             />
             <InputGroup
-              isInvalid={!!errors.billTo && !!touched.billTo}
+              isInvalid={!!errors.description && !!touched?.description}
               type="text"
-              name="billTo"
-              value={values.billTo}
+              name="description"
+              value={values.description}
               onChange={handleChange}
-              error={errors.billTo}
-              label="Bill To"
+              error={errors.description}
+              label="Description"
             />
-          </div>
-          <FieldArray
-            name="items"
-            render={({ push }) => (
-              <div>
-                <span className="font-bold">Invoice Items</span>
-                <table className="border-separate border-spacing-x-4 border-spacing-y-2 text-left">
-                  <tr className="font-medium">
-                    <th className="w-1/2">Item</th>
-                    <th>Price</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                  </tr>
-                  {values.items.map((item, index) => (
-                    <tr>
-                      <td>
-                        <Input
-                          onChange={handleChange}
-                          value={item.name}
-                          name={`items[${index}].name`}
-                        />
-                        <InputError
-                          isInvalid={touched.items?.[index]?.name}
-                          error={errors.items?.[index]?.name}
-                        />
-                      </td>
-                      <td>
-                        <Input
-                          onChange={handleChange}
-                          type="number"
-                          value={item.price}
-                          name={`items[${index}].price`}
-                        />
-                        <InputError
-                          isInvalid={touched.items?.[index]?.price}
-                          error={errors.items?.[index]?.price}
-                        />
-                      </td>
-                      <td>
-                        <Input
-                          onChange={handleChange}
-                          type="number"
-                          value={item.qty}
-                          name={`items[${index}].qty`}
-                        />
-                        <InputError
-                          isInvalid={touched.items?.[index]?.qty}
-                          error={errors.items?.[index]?.qty}
-                        />
-                      </td>
-                      <td>
-                        <Input
-                          type="number"
-                          name={`items[${index}].total`}
-                          value={item.qty * item.price}
-                          readOnly
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </table>
-                <div className="flex justify-between items-start my-4">
-                  <button
-                    className="flex items-center gap-2"
-                    type="button"
-                    onClick={() => push({ name: "", price: 0, qty: 0 })}
-                  >
-                    <FaPlus size={14} />
-                    Add Item
-                  </button>
-                  <InvoiceDetails />
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <InputGroup
+                isInvalid={!!errors.issuedDate && !!touched.issuedDate}
+                type="date"
+                name="issuedDate"
+                value={values.issuedDate}
+                onChange={setFieldValue}
+                error={errors.issuedDate}
+                label="Issued on"
+              />
+              <InputGroup
+                isInvalid={!!errors.dueDate && !!touched.dueDate}
+                type="date"
+                name="dueDate"
+                value={values.dueDate}
+                onChange={setFieldValue}
+                error={errors.dueDate}
+                label="Due on"
+              />
+              <InputGroup
+                isInvalid={!!errors.billFrom && !!touched.billFrom}
+                type="text"
+                name="billFrom"
+                value={values.billFrom}
+                onChange={handleChange}
+                error={errors.billFrom}
+                label="Bill From"
+              />
+              <InputGroup
+                isInvalid={!!errors.billTo && !!touched.billTo}
+                type="text"
+                name="billTo"
+                value={values.billTo}
+                onChange={handleChange}
+                error={errors.billTo}
+                label="Bill To"
+              />
+            </div>
+            <FieldArray
+              name="items"
+              render={({ push }) => (
+                <div>
+                  <span className="font-bold">Invoice Items</span>
+                  <table className="border-separate border-spacing-x-4 border-spacing-y-2 text-left">
+                    <tbody>
+                      <tr className="font-medium">
+                        <th className="w-1/2">Item</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                      </tr>
+                      {values.items.map((item, index) => (
+                        <tr key={index}>
+                          <td>
+                            <Input
+                              onChange={handleChange}
+                              value={item.name}
+                              name={`items[${index}].name`}
+                            />
+                            <InputError
+                              isInvalid={touched.items?.[index]?.name}
+                              error={errors.items?.[index]?.name}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              onChange={handleChange}
+                              type="number"
+                              value={item.price}
+                              name={`items[${index}].price`}
+                            />
+                            <InputError
+                              isInvalid={touched.items?.[index]?.price}
+                              error={errors.items?.[index]?.price}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              onChange={handleChange}
+                              type="number"
+                              value={item.qty}
+                              name={`items[${index}].qty`}
+                            />
+                            <InputError
+                              isInvalid={touched.items?.[index]?.qty}
+                              error={errors.items?.[index]?.qty}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="number"
+                              name={`items[${index}].total`}
+                              value={item.qty * item.price}
+                              readOnly
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="flex justify-between items-start my-4">
+                    <button
+                      className="flex items-center gap-2"
+                      type="button"
+                      onClick={() => push({ name: "", price: 0, qty: 0 })}
+                    >
+                      <FaPlus size={14} />
+                      Add Item
+                    </button>
+                    <InvoiceDetails />
+                  </div>
                 </div>
-              </div>
-            )}
-          />
+              )}
+            />
 
-          <span className="block text-xs">
-            Payment due within 30 days. Late payments subject to a 5% fee.
-          </span>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="additionalNotes" className="text-sm">
-              Additional Notes (Optional)
-            </label>
-            <textarea
-              type="text"
-              id="additionalNotes"
-              name="additionalNotes"
-              value={values.additionalNotes}
-              onChange={handleChange}
-              autoComplete="off"
-              className="border bg-transparent  border-lightGray p-2 rounded-md focus:outline-blue"
-            ></textarea>
-          </div>
-          <div className="mt-8 flex justify-between">
-            <div className="flex flex-col gap-2 items-start">
-              <button type="submit" className="p-2">
-                Save as draft
-              </button>
-              <button className="p-2">Preview</button>
+            <span className="block text-xs">
+              Payment due within 30 days. Late payments subject to a 5% fee.
+            </span>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="additionalNotes" className="text-sm">
+                Additional Notes (Optional)
+              </label>
+              <textarea
+                type="text"
+                id="additionalNotes"
+                name="additionalNotes"
+                value={values.additionalNotes}
+                onChange={handleChange}
+                autoComplete="off"
+                className="border bg-transparent  border-lightGray p-2 rounded-md focus:outline-blue"
+              ></textarea>
             </div>
-            <div className="flex flex-col gap-2 items-start">
-              <Button
-                pending={isLoading}
-                size="sm"
-                disabled={!isValid || !dirty}
-              >
-                <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
-              </Button>
-              <button className="p-2">Print</button>
+            <div className="mt-8 flex justify-between">
+              <div className="flex flex-col gap-2 items-start">
+                <button type="submit" className="p-2">
+                  Save as draft
+                </button>
+                <button className="p-2">Preview</button>
+              </div>
+              <div className="flex flex-col gap-2 items-start">
+                <Button
+                  pending={isLoading}
+                  size="sm"
+                  disabled={!isValid || !dirty}
+                >
+                  <FaPaperclip size={14} color="#f5f5f5" /> Send Invoice
+                </Button>
+                <button className="p-2">Print</button>
+              </div>
             </div>
-          </div>
-        </form>
-      )}
-    </Formik>
+          </form>
+        )}
+      </Formik>
+    </>
   );
 };
 

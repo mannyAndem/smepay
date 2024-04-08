@@ -7,10 +7,14 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
-    prepareHeaders: (headers, { getState, type }) => {
+    prepareHeaders: (headers, { getState, type, endpoint }) => {
       const token = getState().auth.tokens?.current;
-      if (type === "mutation") {
+      if (type === "mutation" && endpoint !== "addClient") {
         headers.set("Content-Type", "application/json");
+      }
+
+      if (endpoint === "addClient") {
+        headers.set("Content-Type", "multipart/form-data");
       }
 
       if (token) {
@@ -97,13 +101,28 @@ export const apiSlice = createApi({
         }
       },
     }),
+
+    // Clients related endpoints
+    getAllClients: builder.query({
+      query: () => "clients",
+      transformResponse: (response) => response.info,
+    }),
+    addClient: builder.mutation({
+      query: (data) => ({
+        url: "client/add/",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
 export const {
+  useAddClientMutation,
   useGetInvoicesQuery,
   useLoginMutation,
   useSignupMutation,
   useLazyGetUserQuery,
   useCreateInvoiceMutation,
+  useGetAllClientsQuery,
 } = apiSlice;
