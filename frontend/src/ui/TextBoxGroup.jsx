@@ -1,7 +1,7 @@
-import Input from "./Input";
 import InputError from "./InputErrors";
+import TextBox from "./TextBox";
 
-const InputGroup = ({
+const TextBoxGroup = ({
   isInvalid,
   label,
   type,
@@ -23,17 +23,15 @@ const InputGroup = ({
           {label}
         </label>
       )}
-      <Input
-        type={type}
+      <TextBox
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        pill={pill}
       />
       <InputError isInvalid={isInvalid} error={error} />
     </div>
   );
 };
 
-export default InputGroup;
+export default TextBoxGroup;

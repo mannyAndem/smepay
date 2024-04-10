@@ -8,6 +8,7 @@ import Header from "./components/Header";
 import MobileNavHeader from "./components/MobileNavHeader";
 import MobileSidebar from "./components/MobileSidebar";
 import { useState } from "react";
+import Loans from "./pages/Loans/Loans";
 
 const Dashboard = () => {
   /**
@@ -42,6 +43,7 @@ const Dashboard = () => {
             <Route path="clients" element={<Clients />} />
             <Route path="transactions" element={<Transactions />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="loans" element={<Loans />} />
           </Routes>
         </div>
       </div>

@@ -33,6 +33,11 @@ const MobileSidebar = ({ expanded }) => {
       to: "/dashboard/settings",
       icon: <IoSettingsOutline size={24} color="#001F3F" />,
     },
+    {
+      name: "loans",
+      to: "/dashboard/loans",
+      icon: <CiBank size={24} color="#001F3F" />,
+    },
   ];
 
   const handleLogOut = () => {

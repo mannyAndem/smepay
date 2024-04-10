@@ -1,3 +1,7 @@
+import { Field } from "formik";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 const Input = ({
   pill,
   disabled,
@@ -7,22 +11,25 @@ const Input = ({
   placeholder,
   value,
   onChange,
+  className,
+  ...rest
 }) => {
-  if (name === undefined) {
-    throw new Error("name prop is required");
-  }
-  if (value === undefined) {
-    throw new Error("value prop is required");
-  }
-  if (onChange === undefined || typeof onChange !== "function") {
-    throw new Error("onchange prop is required and must be a function");
-  }
-
   const pillClass = pill ? "rounded-3xl" : "rounded-sm";
-  const disabledClass = disabled ? "opacity-70" : "";
 
-  return (
-    <input
+  return type === "date" ? (
+    <DatePicker
+      id={id ? id : name}
+      name={name}
+      onChange={(date, e) => onChange(name, date, true)}
+      selected={value}
+      className={
+        className
+          ? className
+          : `${pillClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue disabled:opacity-70`
+      }
+    />
+  ) : (
+    <Field
       type={type ? type : "text"}
       autoComplete="off"
       id={id ? id : name}
@@ -30,8 +37,13 @@ const Input = ({
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      disabled={Boolean(disabled)}
-      className={`${pillClass} ${disabledClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue`}
+      disabled={!!disabled}
+      className={
+        className
+          ? className
+          : `${pillClass} text-sm w-full bg-transparent border border-lightGray p-3 focus:outline-blue disabled:opacity-70`
+      }
+      {...rest}
     />
   );
 };

@@ -1,6 +1,6 @@
 import wip from "../../../../assets/wip.svg";
 
-const Settings = () => {
+const Loans = () => {
   return (
     <div className="px-24 pb-24">
       <div className="mx-auto max-w-[600px]">
@@ -13,4 +13,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default Loans;
