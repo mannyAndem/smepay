@@ -55,13 +55,11 @@ exports.addClient = async (req, res, next) => {
     let image;
     const imageUrl = req.file.path
 
-
+    // const user = await User.findById("658f6f6b1c4fe86457b48265")
+    const user = await User.findById(req.userId)
+    notInDB(user, "User Not Found")
+    
     try {
-        // const user = await User.findById("658f6f6b1c4fe86457b48265")
-        
-        const user = await User.findById(req.userId)
-        notInDB(user, "User Not Found")
-
         await cloudinary.uploader.upload(
             imageUrl,
             async (err, result) => {
@@ -70,28 +68,27 @@ exports.addClient = async (req, res, next) => {
                     error.statusCode = 402
                     throw error
                 }
+
                 image = result.secure_url
+                const client = new Client({
+                    name, email, number, address, 
+                    category, status, note, image, 
+                    user: req.userId
+                    // user: "658f6f6b1c4fe86457b48265"
+                })
+                
+                const newClient = await client.save()
+                user.clients.push(newClient)
+                await user.save() 
+
+                res.status(201).json({
+                    message: "Successfully added client",
+                    data: newClient
+                })            
             }
-        )
-        const client = new Client({
-            name, email, number, address, 
-            category, status, note, image, 
-            user: req.userId
-            // user: "658f6f6b1c4fe86457b48265"
-        })
-
-        const newClient = await client.save()
-
-        user.clients.push(newClient)
-        await user.save() 
-
-        res.status(201).json({
-            message: "Successfully added client",
-            data: newClient
-        })
-
+        )    
     } catch (error) {
-        res.status(500).json({ message: "Error Adding Client", info: error.message })
+        res.status(500).json({ message: "Error Uploading image", info: error.message })
     }
 }
 

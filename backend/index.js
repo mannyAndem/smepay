@@ -108,3 +108,7 @@ one ought to seek to please God, rather than being merely grateful
 for the availability of these gifts (that we do not deserve) 
 from God, I mean, man is but mere "dust of the ground"
 */
+
+// tsugi (next) no -- sheten (final stop)
+
+// pull, then push again
