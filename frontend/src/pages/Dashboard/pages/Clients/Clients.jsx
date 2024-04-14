@@ -4,7 +4,7 @@ import ClientsTable from "../../../../features/clients/ClientsTable";
 import Loader from "../../../../ui/Loader";
 import ErrorMessage from "../../../../ui/ErrorMessage";
 import AddClientModal from "./components/AddClientModal";
-import { useGetAllClientsQuery } from "../../../../features/api/apiSlice";
+import { useGetClientsQuery } from "../../../../features/api/apiSlice";
 
 const Clients = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -15,7 +15,7 @@ const Clients = () => {
     isSuccess,
     isError,
     error,
-  } = useGetAllClientsQuery();
+  } = useGetClientsQuery();
 
   const closeModal = () => {
     setModalOpen(false);

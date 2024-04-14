@@ -5,7 +5,6 @@ import Signup from "./pages/Signup/Signup";
 import Login from "./pages/Login/Login";
 import ProtectedRoute from "./features/authentication/ProtectedRoute";
 import Landing from "./pages/Landing/Landing";
-import CreateInvoiceModal from "./pages/Dashboard/pages/Overview/components/CreateInvoiceModal";
 
 function App() {
   return (

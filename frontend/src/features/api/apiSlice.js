@@ -22,6 +22,7 @@ export const apiSlice = createApi({
       }
     },
   }),
+  tagTypes: ["invoice", "client"],
   endpoints: (builder) => ({
     // auth related endpoints
     login: builder.mutation({
@@ -72,11 +73,12 @@ export const apiSlice = createApi({
     getInvoices: builder.query({
       query: () => "invoice",
       transformResponse: (response) => response.data,
+      providesTags: ["invoice"],
     }),
     createInvoice: builder.mutation({
-      queryFn: async (data, _, __, baseQuery) => {
-        const items = [...data.items];
-        delete data.items; // Removes the items from the initial request body as these will be sent in another request
+      queryFn: async (invoiceData, _, __, baseQuery) => {
+        const { items, ...data } = invoiceData;
+
         try {
           const invoiceResponse = await baseQuery({
             url: "invoice/create",
@@ -85,6 +87,11 @@ export const apiSlice = createApi({
           });
 
           console.log(invoiceResponse);
+
+          if (!invoiceResponse.data?.id) {
+            throw invoiceResponse.error;
+          }
+
           items.forEach(async (item) => {
             const response = await baseQuery({
               url: `item/add/${invoiceResponse.data.id}`,
@@ -100,12 +107,18 @@ export const apiSlice = createApi({
           return { error };
         }
       },
+      invalidatesTags: ["invoice"],
+    }),
+    getInvoicebyId: builder.query({
+      query: (id) => `/invoice/${id}`,
+      transformResponse: (res) => res.data,
     }),
 
     // Clients related endpoints
-    getAllClients: builder.query({
+    getClients: builder.query({
       query: () => "clients",
       transformResponse: (response) => response.info,
+      providesTags: ["client"],
     }),
     addClient: builder.mutation({
       query: (data) => ({
@@ -113,6 +126,7 @@ export const apiSlice = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["client"],
     }),
   }),
 });
@@ -124,5 +138,6 @@ export const {
   useSignupMutation,
   useLazyGetUserQuery,
   useCreateInvoiceMutation,
-  useGetAllClientsQuery,
+  useGetClientsQuery,
+  useGetInvoicebyIdQuery,
 } = apiSlice;

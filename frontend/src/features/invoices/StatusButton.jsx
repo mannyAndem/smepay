@@ -11,8 +11,7 @@ const StatusButton = ({ invoice }) => {
 
   return (
     <div className="flex items-center gap-4 justify-center">
-      <Link
-        to={`/invoices/${invoice._id}`}
+      <div
         className={`${
           invoice.status === "paid"
             ? "bg-green"
@@ -22,12 +21,12 @@ const StatusButton = ({ invoice }) => {
         } py-2 px-4 rounded-2xl text-white text-sm`}
       >
         {invoice.status.toUpperCase()}
-      </Link>
+      </div>
       <div className="relative">
         <button onClick={toggleVisible}>
           <FaEllipsis size={20} />
         </button>
-        <Popup visible={visible} />
+        <Popup visible={visible} invoiceId={invoice._id} />
       </div>
     </div>
   );
@@ -35,16 +34,21 @@ const StatusButton = ({ invoice }) => {
 
 export default StatusButton;
 
-const Popup = ({ visible }) => {
+const Popup = ({ visible, invoiceId }) => {
   return (
     <div
       className={`${
         visible ? "scale-y-100" : "scale-y-0"
       } z-10  origin-top absolute top-[100%] transform right-[-8px] bg-white flex gap-1 flex-col p-5 rounded-md transition duration-300 ease-out shadow-sm`}
     >
-      <button className="p-2 flex justify-start items-center">Edit</button>
+      <Link
+        to={`/invoices/${invoiceId}`}
+        className="p-2 flex justify-start items-center"
+      >
+        View
+      </Link>
       <button className="p-2 whitespace-nowrap flex justify-start items-center">
-        Recent Payment
+        Edit
       </button>
       <button className="p-2 flex justify-start items-center">Print</button>
       <button className="p-2 flex justify-start items-center">Delete</button>

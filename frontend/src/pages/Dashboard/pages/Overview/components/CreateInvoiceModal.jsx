@@ -1,9 +1,9 @@
-import { useGetAllClientsQuery } from "../../../../../features/api/apiSlice";
+import { useGetClientsQuery } from "../../../../../features/api/apiSlice";
 import CreateInvoiceForm from "../../../../../features/invoices/CreateInvoiceForm";
 import Modal from "../../../../../ui/Modal";
 
 const CreateInvoiceModal = ({ isOpen, closeModal }) => {
-  const { data: clients, isLoading, isSuccess } = useGetAllClientsQuery();
+  const { data: clients, isLoading, isSuccess } = useGetClientsQuery();
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} title="Create New Invoice">

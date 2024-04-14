@@ -1,14 +1,33 @@
 import InvoiceDetails from "../../features/invoices/InvoiceDetails";
+import { useParams } from "react-router-dom";
+import Loader from "../../ui/Loader";
+import ErrorMessage from "../../ui/ErrorMessage";
+import { useGetInvoicebyIdQuery } from "../../features/api/apiSlice";
 
-/**
- * This component is responsibe for rendering out an invoice card. It takes the id specified in the URL and renders same
- */
 const Invoice = () => {
+  const { id } = useParams();
+
+  const {
+    isLoading,
+    isError,
+    data: invoice,
+    error,
+    isSuccess,
+  } = useGetInvoicebyIdQuery(id);
+
   return (
     <div className="bg-lightGray flex min-h-screen justify-center items-center">
-      <div className="bg-gray w-1/2  rounded-md overflow-hidden shadow-md">
-        <InvoiceDetails />
-      </div>
+      {isLoading ? (
+        <Loader type="lg" />
+      ) : isSuccess ? (
+        <div className="bg-gray w-1/2  rounded-md overflow-hidden shadow-md">
+          <InvoiceDetails invoice={invoice} />
+        </div>
+      ) : isError ? (
+        <ErrorMessage error={error?.message} />
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };
